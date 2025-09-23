@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server"
+import { NextResponse, type NextRequest } from "next/server"
 import { pandaScoreAPI } from "@/lib/api/pandascore"
 import { cacheManager } from "@/lib/services/cache-manager"
 import { databaseService } from "@/lib/services/database-service"
 
-export async function GET(request: Request, { params }: { params: { game: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { game: string } }) {
   try {
     const { game } = params
     const url = new URL(request.url)

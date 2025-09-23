@@ -5,8 +5,9 @@ import { ApiResponseBuilder } from "@/lib/utils/api-response"
 import { RequestValidator, parseSearchParams } from "@/lib/utils/request-validator"
 import { performanceMonitor } from "@/lib/utils/performance-monitor"
 import { resourceMonitor } from "@/lib/utils/resource-monitor"
+import type { NextRequest } from "next/server"
 
-export async function GET(request: Request, { params }: { params: { game: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { game: string } }) {
   const requestId = performanceMonitor.startRequest(`/api/esports/matches/${params.game}`, "GET")
   const startTime = Date.now()
 

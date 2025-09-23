@@ -62,47 +62,24 @@ export async function updateSession(request: NextRequest) {
     const isAdminRoute = request.nextUrl.pathname.startsWith("/admin")
 
     if (isAdminRoute && user) {
-      // Check if user is admin
-      const { data: userData } = await supabase.from("users").select("is_admin").eq("id", user.id).single()
+      try {
+        const { data: userData } = await supabase.from("users").select("is_admin").eq("id", user.id).single()
 
-      if (!userData?.is_admin) {
-        console.log(
-          `[v0] Security - Unauthorized admin access attempt by user ${user.id} from ${request.ip || "unknown IP"}`,
-        )
+        if (!userData?.is_admin) {
+          console.log(`[v0] Security - Unauthorized admin access attempt by user ${user.id}`)
 
-        // Log security event (you could store this in a security_events table)
-        await supabase
-          .from("user_activity")
-          .insert({
-            user_id: user.id,
-            activity_type: "unauthorized_admin_access",
-            activity_data: {
-              attempted_path: request.nextUrl.pathname,
-              ip_address: request.ip || "unknown",
-              user_agent: request.headers.get("user-agent") || "unknown",
-            },
-          })
-          .catch((err) => console.error("Failed to log security event:", err))
-
-        // User is not admin, redirect to dashboard
+          // User is not admin, redirect to dashboard
+          const url = request.nextUrl.clone()
+          url.pathname = "/dashboard"
+          return NextResponse.redirect(url)
+        } else {
+          console.log(`[v0] Security - Admin access granted to user ${user.id} for ${request.nextUrl.pathname}`)
+        }
+      } catch (adminCheckError) {
+        console.log("[v0] Admin check failed, redirecting to dashboard:", adminCheckError)
         const url = request.nextUrl.clone()
         url.pathname = "/dashboard"
         return NextResponse.redirect(url)
-      } else {
-        console.log(`[v0] Security - Admin access granted to user ${user.id} for ${request.nextUrl.pathname}`)
-
-        await supabase
-          .from("user_activity")
-          .insert({
-            user_id: user.id,
-            activity_type: "admin_access",
-            activity_data: {
-              accessed_path: request.nextUrl.pathname,
-              ip_address: request.ip || "unknown",
-              user_agent: request.headers.get("user-agent") || "unknown",
-            },
-          })
-          .catch((err) => console.error("Failed to log admin access:", err))
       }
     }
 

@@ -85,6 +85,15 @@ NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL=http://localhost:3000
 POSTGRES_URL=your_postgres_connection_string
 POSTGRES_PRISMA_URL=your_postgres_prisma_url
 POSTGRES_URL_NON_POOLING=your_postgres_non_pooling_url
+
+# PandaScore API Configuration
+PANDASCORE_API_KEY=your_pandascore_api_key
+
+# Vercel Blob Storage
+BLOB_READ_WRITE_TOKEN=your_blob_token
+
+# Site Configuration
+NEXT_PUBLIC_SITE_URL=your_site_url
 \`\`\`
 
 ### Installation
@@ -100,8 +109,9 @@ npm install
 cp .env.example .env.local
 # Edit .env.local with your configuration
 
-# Run database migrations
-npm run db:migrate
+# Run database setup scripts
+npm run dev
+# Then run the SQL scripts in the scripts/ folder
 
 # Start development server
 npm run dev
@@ -140,9 +150,9 @@ Key tables:
 - **Foreground**: #374151 - Primary text color
 
 ### Typography
-- **Headlines**: DM Sans Bold
-- **Body Text**: DM Sans Regular
-- **Monospace**: Geist Mono
+- **Headlines**: Inter Bold
+- **Body Text**: Inter Regular
+- **Monospace**: JetBrains Mono
 
 ### Components
 Built with shadcn/ui components:
@@ -192,7 +202,7 @@ npm run test:coverage
 
 ### Database Setup
 1. Create Supabase project
-2. Run database migrations
+2. Run database migrations using the scripts in `/scripts` folder
 3. Configure Row Level Security (RLS) policies
 4. Set up authentication providers
 

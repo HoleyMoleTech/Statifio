@@ -1,6 +1,10 @@
 // PandaScore API client for eSports data
 const PANDASCORE_BASE_URL = "https://api.pandascore.co"
-const API_TOKEN = "diXgTnqQJJHQhk7n1mVzt4EaSEVBU1oMn6tYi9992YEsra4OkM4"
+const API_TOKEN = process.env.PANDASCORE_API_KEY
+
+if (!API_TOKEN) {
+  throw new Error("❌ Missing PANDASCORE_API_KEY environment variable")
+}
 
 // Type definitions for PandaScore API responses
 export interface PandaScoreTeam {

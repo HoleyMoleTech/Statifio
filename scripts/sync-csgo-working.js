@@ -1,6 +1,16 @@
-const PANDASCORE_API_KEY = "diXgTnqQJJHQhk7n1mVzt4EaSEVBU1oMn6tYi9992YEsra4OkM4"
+const PANDASCORE_API_KEY = process.env.PANDASCORE_API_KEY
 const SUPABASE_URL = process.env.SUPABASE_URL
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+if (!PANDASCORE_API_KEY) {
+  console.error("❌ Missing PANDASCORE_API_KEY environment variable")
+  process.exit(1)
+}
+
+if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+  console.error("❌ Missing Supabase environment variables")
+  process.exit(1)
+}
 
 async function fetchCSGOTeams() {
   console.log("🔍 Fetching CSGO teams from PandaScore...")

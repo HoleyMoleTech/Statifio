@@ -11,13 +11,8 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey)
 
-const PANDASCORE_API_KEY = process.env.PANDASCORE_API_KEY
+const PANDASCORE_API_KEY = "diXgTnqQJJHQhk7n1mVzt4EaSEVBU1oMn6tYi9992YEsra4OkM4" // Updated with real PandaScore API key
 const BASE_URL = "https://api.pandascore.co"
-
-if (!PANDASCORE_API_KEY) {
-  console.error("❌ Missing PANDASCORE_API_KEY environment variable")
-  process.exit(1)
-}
 
 async function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))

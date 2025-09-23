@@ -1,11 +1,6 @@
 // Direct test of PandaScore API without TypeScript imports
 const PANDASCORE_BASE_URL = "https://api.pandascore.co"
-const API_TOKEN = process.env.PANDASCORE_API_KEY
-
-if (!API_TOKEN) {
-  console.error("❌ Missing PANDASCORE_API_KEY environment variable")
-  process.exit(1)
-}
+const API_TOKEN = "diXgTnqQJJHQhk7n1mVzt4EaSEVBU1oMn6tYi9992YEsra4OkM4"
 
 async function testPandaScoreAPI() {
   console.log("🔍 Testing PandaScore API connection...")

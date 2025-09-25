@@ -9,10 +9,11 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Checkbox } from "@/components/ui/checkbox"
 import { SocialLoginButtons } from "@/components/auth/social-login-buttons"
+import { MobileLayout } from "@/components/layout/mobile-layout"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState, useRef } from "react"
-import { ArrowLeft, Shield, Eye, EyeOff, ChevronDown, ChevronUp } from "lucide-react"
+import { Shield, Eye, EyeOff, ChevronDown, ChevronUp } from "lucide-react"
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("")
@@ -31,17 +32,30 @@ export default function SignUpPage() {
   const router = useRouter()
 
   const toggleEmailForm = () => {
+    const wasShowing = showEmailForm
     setShowEmailForm(!showEmailForm)
 
-    // Auto-scroll to email form when showing it
-    if (!showEmailForm) {
+    if (wasShowing) {
+      // Closing the form - scroll to top
+      console.log("[v0] Closing email form, scrolling to top")
+      setTimeout(() => {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        })
+        console.log("[v0] Scroll to top executed")
+      }, 200) // Slightly longer delay to ensure form collapse animation completes
+    } else {
+      // Opening the form - scroll to form
+      console.log("[v0] Opening email form, scrolling to form")
       setTimeout(() => {
         emailFormRef.current?.scrollIntoView({
           behavior: "smooth",
           block: "start",
           inline: "nearest",
         })
-      }, 150) // Small delay to allow animation to start
+        console.log("[v0] Scroll to form executed")
+      }, 200) // Slightly longer delay to ensure form expand animation completes
     }
   }
 
@@ -131,22 +145,7 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border/50 bg-background/80 backdrop-blur-sm">
-        <Button variant="ghost" size="sm" onClick={() => router.back()} className="p-2 hover:bg-muted/50">
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div className="flex items-center gap-2">
-          <Shield className="h-5 w-5 text-primary" />
-          <span className="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Statifio
-          </span>
-        </div>
-        <div className="w-9" />
-      </div>
-
-      {/* Content */}
+    <MobileLayout title="Join Statifio" showBack={true} showBottomNav={true}>
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
           <Card className="bg-card/50 backdrop-blur-sm border-border/50 shadow-xl">
@@ -373,6 +372,6 @@ export default function SignUpPage() {
           </Card>
         </div>
       </div>
-    </div>
+    </MobileLayout>
   )
 }

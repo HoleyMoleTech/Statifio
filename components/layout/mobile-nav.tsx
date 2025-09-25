@@ -125,6 +125,7 @@ export function MobileNav() {
               className={cn(
                 "flex flex-col items-center justify-center py-2 px-2 rounded-lg transition-colors",
                 "min-w-[50px] text-xs font-medium disabled:opacity-50",
+                navLoading ? "opacity-50 cursor-not-allowed" : "",
                 isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-muted",
               )}
             >
@@ -136,7 +137,7 @@ export function MobileNav() {
                   className="mb-1"
                 />
               ) : (
-                <Icon className="h-4 w-4 mb-1" />
+                <Icon className={cn("h-4 w-4 mb-1", navLoading && "animate-pulse")} />
               )}
               <span>{item.name}</span>
             </button>

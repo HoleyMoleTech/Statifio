@@ -194,8 +194,13 @@ export async function GET() {
     console.log(`[v0] Total unique teams to save: ${uniqueTeams.length}`)
 
     if (uniqueTeams.length > 0) {
-      await databaseService.saveTeams(uniqueTeams)
-      console.log(`[API] Saved ${uniqueTeams.length} teams to database`)
+      try {
+        await databaseService.saveTeams(uniqueTeams)
+        console.log(`[API] Saved ${uniqueTeams.length} teams to database`)
+      } catch (dbError) {
+        console.error(`[API] Failed to save teams to database:`, dbError)
+        // Continue execution - don't fail the entire request for database issues
+      }
     }
 
     const transformedMatches = allMatches
@@ -206,8 +211,13 @@ export async function GET() {
       .filter((match) => match.game_type !== "unknown")
 
     if (transformedMatches.length > 0) {
-      await databaseService.saveMatches(transformedMatches)
-      console.log(`[API] Attempted to save ${transformedMatches.length} matches to database`)
+      try {
+        await databaseService.saveMatches(transformedMatches)
+        console.log(`[API] Attempted to save ${transformedMatches.length} matches to database`)
+      } catch (dbError) {
+        console.error(`[API] Failed to save matches to database:`, dbError)
+        // Continue execution - don't fail the entire request for database issues
+      }
     }
 
     const liveMatches = [...lolLive, ...csgoLive, ...dota2Live]
@@ -290,6 +300,8 @@ export async function GET() {
     resourceMonitor.trackRequest(responseTime)
     performanceMonitor.endRequest(requestId, 200, undefined, false, 9)
 
+    console.log(`[v0] API Client received data from /overview: ${JSON.stringify(overview).substring(0, 200)}...`)
+
     return ApiResponseBuilder.success(overview, {
       cached: false,
       source: "pandascore",
@@ -304,6 +316,10 @@ export async function GET() {
     resourceMonitor.trackRequest(responseTime, true)
     performanceMonitor.endRequest(requestId, 500, errorMessage)
 
-    return ApiResponseBuilder.error("Failed to fetch esports data", 500, "FETCH_ERROR")
+    return ApiResponseBuilder.error("Failed to fetch esports data", 500, "FETCH_ERROR", {
+      originalError: errorMessage,
+      timestamp: new Date().toISOString(),
+      endpoint: "/api/esports/overview",
+    })
   }
 }

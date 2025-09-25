@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { MobileLayout } from "@/components/layout/mobile-layout"
 
 export default function SetupAdminPage() {
   const [email, setEmail] = useState("")
@@ -47,51 +48,53 @@ export default function SetupAdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Setup Admin User</CardTitle>
-          <CardDescription>Create your first admin user for the platform</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSetupAdmin} className="space-y-4">
-            <div>
-              <Input
-                type="email"
-                placeholder="Admin email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <Input
-                type="password"
-                placeholder="Setup key"
-                value={setupKey}
-                onChange={(e) => setSetupKey(e.target.value)}
-                required
-              />
-            </div>
+    <MobileLayout title="Setup Admin" showBack={true} showBottomNav={false}>
+      <div className="flex-1 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Setup Admin User</CardTitle>
+            <CardDescription>Create your first admin user for the platform</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSetupAdmin} className="space-y-4">
+              <div>
+                <Input
+                  type="email"
+                  placeholder="Admin email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <Input
+                  type="password"
+                  placeholder="Setup key"
+                  value={setupKey}
+                  onChange={(e) => setSetupKey(e.target.value)}
+                  required
+                />
+              </div>
 
-            {message && (
-              <Alert>
-                <AlertDescription className="text-green-600">{message}</AlertDescription>
-              </Alert>
-            )}
+              {message && (
+                <Alert>
+                  <AlertDescription className="text-green-600">{message}</AlertDescription>
+                </Alert>
+              )}
 
-            {error && (
-              <Alert>
-                <AlertDescription className="text-red-600">{error}</AlertDescription>
-              </Alert>
-            )}
+              {error && (
+                <Alert>
+                  <AlertDescription className="text-red-600">{error}</AlertDescription>
+                </Alert>
+              )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Setting up..." : "Setup Admin"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Setting up..." : "Setup Admin"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </MobileLayout>
   )
 }

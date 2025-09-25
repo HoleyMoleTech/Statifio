@@ -2,84 +2,186 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Updated design tokens for modern esports aesthetic */
-  --background: 0 0% 100%;
-  --foreground: 215 25% 27%;
-  --card: 210 40% 98%;
-  --card-foreground: 215 25% 27%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 215 25% 27%;
-  --primary: 160 84% 39%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 160 84% 45%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 210 40% 98%;
-  --muted-foreground: 215 25% 27%;
-  --accent: 160 84% 45%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 220 13% 91%;
-  --input: 0 0% 100%;
-  --ring: 160 84% 39%;
-  --chart-1: 160 84% 39%;
-  --chart-2: 160 84% 45%;
-  --chart-3: 215 25% 27%;
-  --chart-4: 43 74% 66%;
-  --chart-5: 27 87% 67%;
-  --radius: 0.5rem;
-  --sidebar: 210 40% 98%;
-  --sidebar-foreground: 215 25% 27%;
-  --sidebar-primary: 160 84% 39%;
-  --sidebar-primary-foreground: 0 0% 98%;
-  --sidebar-accent: 160 84% 45%;
-  --sidebar-accent-foreground: 0 0% 98%;
-  --sidebar-border: 220 13% 91%;
-  --sidebar-ring: 160 84% 39%;
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+
+  /* Completely revamped color system inspired by Vercel's dark theme design */
+  /* Light theme - refined for better contrast */
+  --color-background: 0 0% 100%;
+  --color-foreground: 240 10% 3.9%;
+  --color-card: 0 0% 100%;
+  --color-card-foreground: 240 10% 3.9%;
+  --color-popover: 0 0% 100%;
+  --color-popover-foreground: 240 10% 3.9%;
+  --color-primary: 240 5.9% 10%;
+  --color-primary-foreground: 0 0% 98%;
+  --color-secondary: 240 4.8% 95.9%;
+  --color-secondary-foreground: 240 5.9% 10%;
+  --color-muted: 240 4.8% 95.9%;
+  --color-muted-foreground: 240 3.8% 45%;
+  --color-accent: 240 4.8% 95.9%;
+  --color-accent-foreground: 240 5.9% 10%;
+  --color-destructive: 0 72% 51%;
+  --color-destructive-foreground: 0 0% 98%;
+  --color-border: 240 5.9% 90%;
+  --color-input: 240 5.9% 90%;
+  --color-ring: 240 5.9% 10%;
+  --color-chart-1: 173 58% 39%;
+  --color-chart-2: 12 76% 61%;
+  --color-chart-3: 197 37% 24%;
+  --color-chart-4: 43 74% 66%;
+  --color-chart-5: 27 87% 67%;
+  --radius: 0.75rem;
 }
 
+/* Converting to v4 compatible dark theme using CSS custom properties */
 .dark {
-  /* Updated dark mode tokens for gaming aesthetic */
-  --background: 222 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 160 84% 39%;
-  --primary-foreground: 222 84% 4.9%;
-  --secondary: 217 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 160 84% 45%;
-  --accent-foreground: 222 84% 4.9%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217 32.6% 17.5%;
-  --input: 217 32.6% 17.5%;
-  --ring: 160 84% 39%;
-  --chart-1: 160 84% 39%;
-  --chart-2: 160 84% 45%;
-  --chart-3: 215 20.2% 65.1%;
-  --chart-4: 43 74% 66%;
-  --chart-5: 27 87% 67%;
-  --sidebar: 222 84% 4.9%;
-  --sidebar-foreground: 210 40% 98%;
-  --sidebar-primary: 160 84% 39%;
-  --sidebar-primary-foreground: 222 84% 4.9%;
-  --sidebar-accent: 160 84% 45%;
-  --sidebar-accent-foreground: 222 84% 4.9%;
-  --sidebar-border: 217 32.6% 17.5%;
-  --sidebar-ring: 160 84% 39%;
+  /* Professional dark theme inspired by Vercel design system */
+  --color-background: 240 10% 3.9%;
+  --color-foreground: 0 0% 98%;
+  --color-card: 240 10% 3.9%;
+  --color-card-foreground: 0 0% 98%;
+  --color-popover: 240 10% 3.9%;
+  --color-popover-foreground: 0 0% 98%;
+  --color-primary: 0 0% 98%;
+  --color-primary-foreground: 240 5.9% 10%;
+  --color-secondary: 240 3.7% 15.9%;
+  --color-secondary-foreground: 0 0% 98%;
+  --color-muted: 240 3.7% 15.9%;
+  --color-muted-foreground: 240 5% 64.9%;
+  --color-accent: 240 3.7% 15.9%;
+  --color-accent-foreground: 0 0% 98%;
+  --color-destructive: 0 62.8% 30.6%;
+  --color-destructive-foreground: 0 0% 98%;
+  --color-border: 240 3.7% 15.9%;
+  --color-input: 240 3.7% 15.9%;
+  --color-ring: 240 4.9% 83.9%;
+  --color-chart-1: 173 58% 39%;
+  --color-chart-2: 12 76% 61%;
+  --color-chart-3: 197 37% 24%;
+  --color-chart-4: 43 74% 66%;
+  --color-chart-5: 27 87% 67%;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+/* Converting base styles to standard CSS without @layer directive */
+* {
+  border-color: hsl(var(--color-border));
+}
+
+html {
+  /* Force dark theme by default for enhanced readability */
+  @apply dark;
+}
+
+body {
+  background-color: hsl(var(--color-background));
+  color: hsl(var(--color-foreground));
+  /* Enhanced typography for better readability */
+  font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Improved heading hierarchy with larger, clearer fonts */
+h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
+}
+
+h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.4;
+}
+
+/* Enhanced body text readability */
+p {
+  line-height: 1.75;
+}
+
+/* Better link contrast and hover states */
+a {
+  color: hsl(var(--color-foreground));
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: hsl(var(--color-primary));
+}
+
+/* Improved focus states for accessibility */
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--color-ring)), 0 0 0 4px hsl(var(--color-background));
+}
+
+/* Enhanced scrollbar styling for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: hsl(var(--color-muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--color-muted-foreground) / 0.3);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--color-muted-foreground) / 0.5);
+}
+
+/* Converting utility classes to standard CSS without @layer directive */
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+/* Enhanced gradient text for branding */
+.gradient-text {
+  background: linear-gradient(to right, hsl(var(--color-primary)), hsl(var(--color-chart-1)));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Improved glass morphism effects */
+.glass {
+  background-color: hsl(var(--color-background) / 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid hsl(var(--color-border) / 0.5);
+}
+
+/* Better shadow system */
+.shadow-elegant {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.shadow-elegant-lg {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }

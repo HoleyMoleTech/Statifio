@@ -7,9 +7,9 @@ export function Footer() {
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
-          <div className="space-y-4">
-            <Logo size="md" showText={true} />
-            <p className="text-sm text-muted-foreground max-w-xs">
+          <div className="space-y-2">
+            <Logo size="2xl" showText={true} />
+            <p className="text-sm text-muted-foreground max-w-xs -mt-1">
               Your ultimate destination for real-time eSports and football statistics, analytics, and insights.
             </p>
           </div>

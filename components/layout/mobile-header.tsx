@@ -43,7 +43,7 @@ export function MobileHeader({
 }: MobileHeaderProps) {
   const { user, isLoading } = useAuth()
   const { profile } = useProfile()
-  const { navigateTo } = useNavigation()
+  const { navigateTo, isLoading: navLoading } = useNavigation()
 
   const handleProfileClick = () => {
     console.log("[v0] MobileHeader: Navigating to profile")
@@ -65,13 +65,18 @@ export function MobileHeader({
       <div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
           {showMenu && (
-            <Button variant="ghost" size="sm" onClick={onMenuClick} className="p-2">
+            <Button variant="ghost" size="sm" onClick={onMenuClick} className="p-2" disabled={navLoading}>
               <Menu className="h-5 w-5" />
             </Button>
           )}
           {showBack && (
-            <Button variant="ghost" size="sm" onClick={onBackClick} className="p-2">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <Button variant="ghost" size="sm" onClick={onBackClick} className="p-2" disabled={navLoading}>
+              <svg
+                className={`h-5 w-5 ${navLoading ? "animate-pulse" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </Button>
@@ -81,13 +86,19 @@ export function MobileHeader({
 
         <div className="flex items-center gap-2">
           {showSearch && (
-            <Button variant="ghost" size="sm" onClick={onSearchClick} className="p-2">
+            <Button variant="ghost" size="sm" onClick={onSearchClick} className="p-2" disabled={navLoading}>
               <Search className="h-5 w-5" />
             </Button>
           )}
 
           {showNotifications && (
-            <Button variant="ghost" size="sm" onClick={onNotificationClick} className="p-2 relative">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onNotificationClick}
+              className="p-2 relative"
+              disabled={navLoading}
+            >
               <Bell className="h-5 w-5" />
               {notificationCount > 0 && (
                 <Badge
@@ -105,7 +116,8 @@ export function MobileHeader({
           {user && !isLoading && (
             <button
               onClick={handleProfileClick}
-              className="focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-full"
+              disabled={navLoading}
+              className="focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-full disabled:opacity-50"
             >
               <UserAvatar {...avatarProps} />
             </button>

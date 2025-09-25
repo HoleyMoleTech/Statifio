@@ -1,6 +1,7 @@
 import type React from "react"
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
+import { MobileLayout } from "@/components/layout/mobile-layout"
 
 export default async function AdminLayout({
   children,
@@ -26,14 +27,14 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
+    <MobileLayout title="Admin Dashboard" showBack={true} showBottomNav={true}>
+      <div className="space-y-4">
+        <div className="border-b bg-card rounded-lg p-4">
           <h1 className="text-2xl font-bold text-foreground">Admin Dashboard</h1>
           <p className="text-muted-foreground">Manage users and platform settings</p>
         </div>
+        {children}
       </div>
-      <div className="container mx-auto px-4 py-6">{children}</div>
-    </div>
+    </MobileLayout>
   )
 }

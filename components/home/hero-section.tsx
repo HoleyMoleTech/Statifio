@@ -18,83 +18,85 @@ export function HeroSection() {
   }
 
   return (
-    <section className="space-y-6">
-      {/* Main Hero */}
-      <div className="text-center space-y-4">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-foreground text-balance">
-            Welcome to <span className="text-primary">Statifio</span>
+    <section className="space-y-8">
+      <div className="text-center space-y-6">
+        <div className="space-y-4">
+          <h1 className="text-5xl font-bold text-foreground text-balance leading-tight">
+            Welcome to <span className="gradient-text">Statifio</span>
           </h1>
-          <p className="text-muted-foreground text-pretty max-w-md mx-auto">
+          <p className="text-lg text-muted-foreground text-pretty max-w-2xl mx-auto leading-relaxed">
             Your ultimate destination for real-time eSports and football statistics, analytics, and insights
           </p>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-2">
-          <Badge variant="secondary" className="text-xs">
+        <div className="flex flex-wrap justify-center gap-3">
+          <Badge variant="secondary" className="text-sm px-4 py-2 bg-chart-1/10 text-chart-1 border-chart-1/20">
             Live Updates
           </Badge>
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="text-sm px-4 py-2 border-muted-foreground/20">
             Multi-Sport
           </Badge>
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="text-sm px-4 py-2 border-muted-foreground/20">
             Real-time Stats
           </Badge>
         </div>
       </div>
 
-      {/* Quick Stats Cards */}
-      <div className="grid grid-cols-2 gap-3">
-        <Card className="bg-card border">
-          <CardContent className="p-4 text-center">
-            <div className="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-full mx-auto mb-2">
-              <Trophy className="h-5 w-5 text-primary" />
+      <div className="grid grid-cols-2 gap-4">
+        <Card className="glass shadow-elegant hover:shadow-elegant-lg transition-all duration-300">
+          <CardContent className="p-6 text-center">
+            <div className="flex items-center justify-center w-12 h-12 bg-chart-1/10 rounded-xl mx-auto mb-4">
+              <Trophy className="h-6 w-6 text-chart-1" />
             </div>
-            <div className="text-2xl font-bold text-foreground">
+            <div className="text-3xl font-bold text-foreground mb-1">
               {isLoading ? "..." : error ? "0" : totalMatches.toLocaleString()}
             </div>
-            <div className="text-xs text-muted-foreground">Live Matches</div>
+            <div className="text-sm text-muted-foreground font-medium">Live Matches</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border">
-          <CardContent className="p-4 text-center">
-            <div className="flex items-center justify-center w-10 h-10 bg-secondary/10 rounded-full mx-auto mb-2">
-              <Users className="h-5 w-5 text-secondary" />
+        <Card className="glass shadow-elegant hover:shadow-elegant-lg transition-all duration-300">
+          <CardContent className="p-6 text-center">
+            <div className="flex items-center justify-center w-12 h-12 bg-chart-2/10 rounded-xl mx-auto mb-4">
+              <Users className="h-6 w-6 text-chart-2" />
             </div>
-            <div className="text-2xl font-bold text-foreground">
+            <div className="text-3xl font-bold text-foreground mb-1">
               {isLoading ? "..." : error ? "0" : formatNumber(totalPlayers)}
             </div>
-            <div className="text-xs text-muted-foreground">Players Tracked</div>
+            <div className="text-sm text-muted-foreground font-medium">Players Tracked</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border">
-          <CardContent className="p-4 text-center">
-            <div className="flex items-center justify-center w-10 h-10 bg-accent/10 rounded-full mx-auto mb-2">
-              <TrendingUp className="h-5 w-5 text-accent" />
+        <Card className="glass shadow-elegant hover:shadow-elegant-lg transition-all duration-300">
+          <CardContent className="p-6 text-center">
+            <div className="flex items-center justify-center w-12 h-12 bg-chart-3/10 rounded-xl mx-auto mb-4">
+              <TrendingUp className="h-6 w-6 text-chart-3" />
             </div>
-            <div className="text-2xl font-bold text-foreground">
+            <div className="text-3xl font-bold text-foreground mb-1">
               {isLoading ? "..." : error ? "0" : totalTeams.toLocaleString()}
             </div>
-            <div className="text-xs text-muted-foreground">Teams Analyzed</div>
+            <div className="text-sm text-muted-foreground font-medium">Teams Analyzed</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border">
-          <CardContent className="p-4 text-center">
-            <div className="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-full mx-auto mb-2">
-              <Zap className="h-5 w-5 text-primary" />
+        <Card className="glass shadow-elegant hover:shadow-elegant-lg transition-all duration-300">
+          <CardContent className="p-6 text-center">
+            <div className="flex items-center justify-center w-12 h-12 bg-chart-1/10 rounded-xl mx-auto mb-4">
+              <Zap className="h-6 w-6 text-chart-1" />
             </div>
-            <div className="text-2xl font-bold text-foreground">24/7</div>
-            <div className="text-xs text-muted-foreground">Live Coverage</div>
+            <div className="text-3xl font-bold text-foreground mb-1">24/7</div>
+            <div className="text-sm text-muted-foreground font-medium">Live Coverage</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* CTA Button */}
-      <div className="text-center">
-        <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Explore Statistics</Button>
+      <div className="text-center pt-4">
+        <Button
+          size="lg"
+          className="w-full max-w-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg py-6 shadow-elegant hover:shadow-elegant-lg transition-all duration-300"
+        >
+          Explore Statistics
+        </Button>
       </div>
     </section>
   )

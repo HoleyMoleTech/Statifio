@@ -63,53 +63,55 @@ export function PremiumUpgradeCard({ userId, isPremium, premiumExpiresAt }: Prem
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {plans.map((plan) => (
         <Card key={plan.id} className={plan.popular ? "border-primary shadow-lg" : ""}>
-          <CardHeader className="text-center relative">
+          <CardHeader className="text-center relative pb-4 pt-4">
             {plan.popular && (
-              <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary">Most Popular</Badge>
+              <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-primary text-xs px-2 py-1">
+                Most Popular
+              </Badge>
             )}
-            <CardTitle className="text-2xl">{plan.name}</CardTitle>
-            <div className="space-y-2">
-              <div className="text-4xl font-bold">
+            <CardTitle className="text-xl mb-2">{plan.name}</CardTitle>
+            <div className="space-y-1">
+              <div className="text-3xl font-bold">
                 ${plan.price}
-                <span className="text-lg font-normal text-muted-foreground">/{plan.period}</span>
+                <span className="text-base font-normal text-muted-foreground">/{plan.period}</span>
               </div>
               {plan.savings && (
-                <Badge variant="secondary" className="text-xs">
+                <Badge variant="secondary" className="text-xs px-2 py-0.5">
                   {plan.savings}
                 </Badge>
               )}
-              <p className="text-sm text-muted-foreground">{plan.description}</p>
+              <p className="text-xs text-muted-foreground mt-1">{plan.description}</p>
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-4">
-            <ul className="space-y-3">
+          <CardContent className="space-y-3 pt-0 pb-4">
+            <ul className="space-y-2">
               <li className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-primary" />
-                <span className="text-sm">Ad-free browsing</span>
+                <Check className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                <span className="text-xs">Ad-free browsing</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-primary" />
-                <span className="text-sm">Advanced analytics</span>
+                <Check className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                <span className="text-xs">Advanced analytics</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-primary" />
-                <span className="text-sm">Priority support</span>
+                <Check className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                <span className="text-xs">Priority support</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-primary" />
-                <span className="text-sm">Exclusive content</span>
+                <Check className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                <span className="text-xs">Exclusive content</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-primary" />
-                <span className="text-sm">Premium badge</span>
+                <Check className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                <span className="text-xs">Premium badge</span>
               </li>
             </ul>
 
-            <Button className="w-full" size="lg" onClick={() => setPaymentDialogOpen(true)}>
+            <Button className="w-full" onClick={() => setPaymentDialogOpen(true)}>
               <CreditCard className="h-4 w-4 mr-2" />
               Upgrade to Premium
             </Button>

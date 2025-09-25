@@ -54,7 +54,19 @@ export class DatabaseService {
     return await createClient()
   }
 
+  private isSupabaseConfigured(): boolean {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    return !!(url && key && serviceKey)
+  }
+
   async saveTeams(teams: TeamData[]): Promise<void> {
+    if (!this.isSupabaseConfigured()) {
+      console.warn("[v0] Supabase not configured, skipping team save operation")
+      return
+    }
+
     const supabase = this.getServiceClient()
 
     const { error } = await supabase.from("teams").upsert(teams, {
@@ -69,6 +81,11 @@ export class DatabaseService {
   }
 
   async getTeamsByGame(gameType: string, sportType = "esports"): Promise<any[]> {
+    if (!this.isSupabaseConfigured()) {
+      console.warn("[v0] Supabase not configured, returning empty teams array")
+      return []
+    }
+
     const supabase = await this.getClient()
 
     const { data, error } = await supabase
@@ -87,6 +104,11 @@ export class DatabaseService {
   }
 
   async getTeamsByExternalIds(externalIds: string[], gameType: string, sportType = "esports"): Promise<any[]> {
+    if (!this.isSupabaseConfigured()) {
+      console.warn("[v0] Supabase not configured, returning empty teams array")
+      return []
+    }
+
     const supabase = await this.getClient()
 
     const { data, error } = await supabase
@@ -105,6 +127,11 @@ export class DatabaseService {
   }
 
   async saveMatches(matches: MatchData[]): Promise<void> {
+    if (!this.isSupabaseConfigured()) {
+      console.warn("[v0] Supabase not configured, skipping match save operation")
+      return
+    }
+
     const supabase = this.getServiceClient()
 
     console.log(`[v0] Starting to save ${matches.length} matches`)
@@ -168,6 +195,11 @@ export class DatabaseService {
   }
 
   async getMatchesByGame(gameType: string, sportType = "esports", limit = 10): Promise<any[]> {
+    if (!this.isSupabaseConfigured()) {
+      console.warn("[v0] Supabase not configured, returning empty matches array")
+      return []
+    }
+
     const supabase = await this.getClient()
 
     const { data, error } = await supabase
@@ -191,6 +223,11 @@ export class DatabaseService {
   }
 
   async savePlayers(players: PlayerData[]): Promise<void> {
+    if (!this.isSupabaseConfigured()) {
+      console.warn("[v0] Supabase not configured, skipping player save operation")
+      return
+    }
+
     const supabase = this.getServiceClient()
 
     const { error } = await supabase.from("players").upsert(players, {
@@ -205,6 +242,11 @@ export class DatabaseService {
   }
 
   async getPlayersByTeam(teamId: string): Promise<any[]> {
+    if (!this.isSupabaseConfigured()) {
+      console.warn("[v0] Supabase not configured, returning empty players array")
+      return []
+    }
+
     const supabase = await this.getClient()
 
     const { data, error } = await supabase
@@ -222,6 +264,11 @@ export class DatabaseService {
   }
 
   async isDataFresh(table: string, gameType: string, maxAgeMinutes = 30): Promise<boolean> {
+    if (!this.isSupabaseConfigured()) {
+      console.warn("[v0] Supabase not configured, treating data as not fresh")
+      return false
+    }
+
     const supabase = await this.getClient()
 
     const cutoffTime = new Date(Date.now() - maxAgeMinutes * 60 * 1000).toISOString()
@@ -292,6 +339,11 @@ export class DatabaseService {
     gameType: string,
     sportType = "esports",
   ): Promise<string | null> {
+    if (!this.isSupabaseConfigured()) {
+      console.warn("[v0] Supabase not configured, cannot resolve team ID")
+      return null
+    }
+
     const supabase = this.getServiceClient()
 
     console.log(`[v0] Looking up team ID for external_id=${externalId}, game_type=${gameType}, sport_type=${sportType}`)

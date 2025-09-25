@@ -1,12 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@theme inline {
+@theme {
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
 
-  /* Completely revamped color system inspired by Vercel's dark theme design */
+  /* Updated color system to use Tailwind v4 syntax without hsl() wrapper */
   /* Light theme - refined for better contrast */
   --color-background: 0 0% 100%;
   --color-foreground: 240 10% 3.9%;
@@ -35,9 +33,39 @@
   --radius: 0.75rem;
 }
 
-/* Converting to v4 compatible dark theme using CSS custom properties */
+/* Updated dark theme to use modern CSS custom properties without .dark class wrapper */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Professional dark theme inspired by Vercel design system */
+    --color-background: 240 10% 3.9%;
+    --color-foreground: 0 0% 98%;
+    --color-card: 240 10% 3.9%;
+    --color-card-foreground: 0 0% 98%;
+    --color-popover: 240 10% 3.9%;
+    --color-popover-foreground: 0 0% 98%;
+    --color-primary: 0 0% 98%;
+    --color-primary-foreground: 240 5.9% 10%;
+    --color-secondary: 240 3.7% 15.9%;
+    --color-secondary-foreground: 0 0% 98%;
+    --color-muted: 240 3.7% 15.9%;
+    --color-muted-foreground: 240 5% 64.9%;
+    --color-accent: 240 3.7% 15.9%;
+    --color-accent-foreground: 0 0% 98%;
+    --color-destructive: 0 62.8% 30.6%;
+    --color-destructive-foreground: 0 0% 98%;
+    --color-border: 240 3.7% 15.9%;
+    --color-input: 240 3.7% 15.9%;
+    --color-ring: 240 4.9% 83.9%;
+    --color-chart-1: 173 58% 39%;
+    --color-chart-2: 12 76% 61%;
+    --color-chart-3: 197 37% 24%;
+    --color-chart-4: 43 74% 66%;
+    --color-chart-5: 27 87% 67%;
+  }
+}
+
+/* Preserved manual dark theme override for theme switching */
 .dark {
-  /* Professional dark theme inspired by Vercel design system */
   --color-background: 240 10% 3.9%;
   --color-foreground: 0 0% 98%;
   --color-card: 240 10% 3.9%;
@@ -64,7 +92,7 @@
   --color-chart-5: 27 87% 67%;
 }
 
-/* Converting base styles to standard CSS without @layer directive */
+/* Updated base styles to use modern CSS without layer directives */
 * {
   border-color: hsl(var(--color-border));
 }
@@ -152,7 +180,7 @@ a:hover {
   background-color: hsl(var(--color-muted-foreground) / 0.5);
 }
 
-/* Converting utility classes to standard CSS without @layer directive */
+/* Updated utility classes to use modern CSS syntax */
 .text-balance {
   text-wrap: balance;
 }

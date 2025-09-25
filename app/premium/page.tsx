@@ -1,34 +1,83 @@
-import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
+"use client"
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
 import { PremiumUpgradeCard } from "@/components/premium/premium-upgrade-card"
 import { PremiumFeatures } from "@/components/premium/premium-features"
 import { MobileLayout } from "@/components/layout/mobile-layout"
 import { Crown, Zap, Shield, Star } from "lucide-react"
 
-export default async function PremiumPage() {
-  const supabase = await createClient()
+export default function PremiumPage() {
+  const [user, setUser] = useState<any>(null)
+  const [userData, setUserData] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter()
+  const supabase = createClient()
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser()
+  useEffect(() => {
+    const getUser = async () => {
+      console.log("[v0] Premium page: Getting user data")
 
-  if (error || !user) {
-    redirect("/auth/login")
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser()
+
+      console.log("[v0] Premium page: User data received", { user: !!user, error })
+
+      if (error || !user) {
+        console.log("[v0] Premium page: No user, redirecting to login")
+        router.push("/auth/login")
+        return
+      }
+
+      setUser(user)
+
+      // Get user's current premium status
+      const { data: userDataResult } = await supabase
+        .from("users")
+        .select("is_premium, premium_expires_at")
+        .eq("id", user.id)
+        .single()
+
+      console.log("[v0] Premium page: User premium data", userDataResult)
+      setUserData(userDataResult)
+      setIsLoading(false)
+    }
+
+    getUser()
+  }, [router, supabase])
+
+  if (isLoading) {
+    return (
+      <MobileLayout title="Premium" showSearch={false} showNotifications={true}>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading premium page...</p>
+          </div>
+        </div>
+      </MobileLayout>
+    )
   }
 
-  // Get user's current premium status
-  const { data: userData } = await supabase
-    .from("users")
-    .select("is_premium, premium_expires_at")
-    .eq("id", user.id)
-    .single()
+  if (!user) {
+    return (
+      <MobileLayout title="Premium" showSearch={false} showNotifications={false}>
+        <div className="text-center py-12 space-y-4">
+          <h2 className="text-xl font-bold text-foreground mb-2">Sign in to view premium</h2>
+          <p className="text-muted-foreground mb-6">Access premium features and upgrade options</p>
+        </div>
+      </MobileLayout>
+    )
+  }
 
   const isPremium = userData?.is_premium || false
   const premiumExpiresAt = userData?.premium_expires_at
 
   return (
-    <MobileLayout title="Premium" showSearch={false} showNotifications={true} showMenu={true} showBottomNav={true}>
+    <MobileLayout title="Premium" showSearch={false} showNotifications={true}>
       {/* Header */}
       <div className="text-center mb-12">
         <div className="flex items-center justify-center mb-4">

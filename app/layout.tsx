@@ -9,12 +9,12 @@ import "./globals.css"
 
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-inter", // Updated to match globals.css variable name
 })
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-mono",
+  variable: "--font-jetbrains-mono", // Updated to match globals.css variable name
 })
 
 export const metadata: Metadata = {

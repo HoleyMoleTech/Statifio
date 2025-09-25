@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import "tailwindcss";
-
 @theme inline {
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
@@ -73,7 +71,8 @@
 
 html {
   /* Force dark theme by default for enhanced readability */
-  @apply dark;
+  background-color: hsl(240 10% 3.9%);
+  color: hsl(0 0% 98%);
 }
 
 body {

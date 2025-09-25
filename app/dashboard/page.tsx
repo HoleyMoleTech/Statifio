@@ -1,79 +1,53 @@
 "use client"
 
 import { MobileLayout } from "@/components/layout/mobile-layout"
-import { AnalyticsOverview } from "@/components/dashboard/analytics-overview"
-import { PerformanceCharts } from "@/components/dashboard/performance-charts"
+import { ProtectedRoute } from "@/components/auth/protected-route"
+import { LiveAnalyticsDashboard } from "@/components/dashboard/live-analytics-dashboard"
+import { RealTimeStats } from "@/components/dashboard/real-time-stats"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { BarChart3, Activity, TrendingUp } from "lucide-react"
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const router = useRouter()
-  const supabase = createClient()
-
-  useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-
-      if (!user) {
-        router.push("/auth/login")
-        return
-      }
-
-      setUser(user)
-      setIsLoading(false)
-    }
-
-    getUser()
-  }, [router, supabase])
-
-  if (isLoading) {
-    return (
-      <MobileLayout title="Dashboard" showSearch={false} showNotifications={true}>
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading dashboard...</p>
-          </div>
-        </div>
-      </MobileLayout>
-    )
-  }
-
-  if (!user) {
-    return (
-      <MobileLayout title="Dashboard" showSearch={false} showNotifications={false}>
-        <div className="text-center py-12 space-y-4">
-          <h2 className="text-xl font-bold text-foreground mb-2">Sign in to view dashboard</h2>
-          <p className="text-muted-foreground mb-6">Access your personalized analytics and insights</p>
-        </div>
-      </MobileLayout>
-    )
-  }
-
   return (
-    <MobileLayout title="Dashboard" showSearch={false} showNotifications={true}>
-      <div className="space-y-6">
-        <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-muted">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="performance">Performance</TabsTrigger>
-          </TabsList>
+    <ProtectedRoute requireAuth={true}>
+      <MobileLayout title="Analytics Dashboard" showSearch={false} showNotifications={true}>
+        <div className="space-y-6">
+          <Tabs defaultValue="analytics" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 bg-muted">
+              <TabsTrigger value="analytics" className="gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Analytics
+              </TabsTrigger>
+              <TabsTrigger value="realtime" className="gap-2">
+                <Activity className="h-4 w-4" />
+                Real-Time
+              </TabsTrigger>
+              <TabsTrigger value="insights" className="gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Insights
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="overview" className="mt-6">
-            <AnalyticsOverview />
-          </TabsContent>
+            <TabsContent value="analytics" className="mt-6">
+              <LiveAnalyticsDashboard />
+            </TabsContent>
 
-          <TabsContent value="performance" className="mt-6">
-            <PerformanceCharts />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </MobileLayout>
+            <TabsContent value="realtime" className="mt-6">
+              <RealTimeStats />
+            </TabsContent>
+
+            <TabsContent value="insights" className="mt-6">
+              <div className="text-center py-12 space-y-4">
+                <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground" />
+                <h3 className="text-lg font-semibold text-foreground">AI Insights Coming Soon</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Advanced AI-powered insights and predictions will be available here to help you make better decisions.
+                </p>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </MobileLayout>
+    </ProtectedRoute>
   )
 }

@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { Users, CreditCard, Settings, BarChart3, Shield } from "lucide-react"
+import { Users, CreditCard, Settings, BarChart3, Shield, Trophy } from "lucide-react"
 
 const adminNavItems = [
   {
@@ -11,6 +11,12 @@ const adminNavItems = [
     href: "/admin/users",
     icon: Users,
     description: "Manage user accounts and permissions",
+  },
+  {
+    name: "Teams",
+    href: "/admin/teams",
+    icon: Trophy,
+    description: "Manage teams and rosters",
   },
   {
     name: "Payments",
@@ -43,7 +49,7 @@ export function AdminNav() {
 
   return (
     <nav className="bg-card border rounded-lg p-4 mb-6">
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         {adminNavItems.map((item) => {
           const isActive = pathname === item.href
           const Icon = item.icon

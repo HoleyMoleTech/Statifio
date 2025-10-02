@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { Home, BarChart3, Calendar, Settings, LogIn, Shield, Crown } from "@/lib/icons"
+import { Home, BarChart3, Calendar, Settings, LogIn, Shield, Crown } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/use-auth"

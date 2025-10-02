@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ChevronRight, Gamepad2, Trophy, Loader2 } from "@/lib/icons"
+import { ChevronRight, Gamepad2, Trophy, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useEsportsOverview } from "@/lib/hooks/use-esports-data"
 

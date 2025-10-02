@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { TrendingUp, Users, Trophy, Zap } from "@/lib/icons"
+import { TrendingUp, Users, Trophy, Zap } from "lucide-react"
 import { usePlatformStats } from "@/hooks/use-platform-stats"
 
 export function HeroSection() {

@@ -126,6 +126,12 @@
     text-rendering: optimizeLegibility;
   }
 
+  svg {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+
   /* Clean heading hierarchy */
   h1 {
     @apply text-2xl font-semibold tracking-tight leading-tight text-foreground;

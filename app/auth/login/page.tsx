@@ -159,7 +159,7 @@ export default function LoginPage() {
           </div>
 
           <div className="relative z-10 max-w-2xl">
-            <div className="mb-8">
+            <div className="mb-8 pt-12">
               <Logo size="xl" showText={true} href={null} />
             </div>
 
@@ -256,80 +256,80 @@ export default function LoginPage() {
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Right Side - Login Form */}
-        <div className="w-[480px] bg-background p-12 sticky top-0 h-screen overflow-y-auto">
-          <div className="w-full max-w-sm pt-20">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h2>
-              <p className="text-muted-foreground">Sign in to access your analytics dashboard</p>
-            </div>
-
-            <form onSubmit={handleLogin} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="desktop-email" className="text-foreground font-medium">
-                  Email Address
-                </Label>
-                <Input
-                  id="desktop-email"
-                  type="email"
-                  placeholder="your@email.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-input border h-12 text-base"
-                />
+          {/* Right Side - Login Form */}
+          <div className="w-[480px] bg-background p-12 sticky top-0 h-screen overflow-y-auto">
+            <div className="w-full max-w-sm pt-12">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h2>
+                <p className="text-muted-foreground">Sign in to access your analytics dashboard</p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="desktop-password" className="text-foreground font-medium">
-                  Password
-                </Label>
-                <Input
-                  id="desktop-password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="bg-input border h-12 text-base"
-                />
+              <form onSubmit={handleLogin} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="desktop-email" className="text-foreground font-medium">
+                    Email Address
+                  </Label>
+                  <Input
+                    id="desktop-email"
+                    type="email"
+                    placeholder="your@email.com"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="bg-input border h-12 text-base"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="desktop-password" className="text-foreground font-medium">
+                    Password
+                  </Label>
+                  <Input
+                    id="desktop-password"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="bg-input border h-12 text-base"
+                  />
+                </div>
+
+                {error && (
+                  <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+                    <p className="text-sm text-destructive">{error}</p>
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  className="w-full bg-primary hover:bg-primary/90 h-12 text-base font-medium"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Signing in..." : "Sign In"}
+                </Button>
+              </form>
+
+              <div className="mt-8 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Don't have an account?{" "}
+                  <Link href="/auth/signup" className="text-primary hover:underline font-medium">
+                    Create one now
+                  </Link>
+                </p>
               </div>
 
-              {error && (
-                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-                  <p className="text-sm text-destructive">{error}</p>
-                </div>
-              )}
-
-              <Button
-                type="submit"
-                className="w-full bg-primary hover:bg-primary/90 h-12 text-base font-medium"
-                disabled={isLoading}
-              >
-                {isLoading ? "Signing in..." : "Sign In"}
-              </Button>
-            </form>
-
-            <div className="mt-8 text-center">
-              <p className="text-sm text-muted-foreground">
-                Don't have an account?{" "}
-                <Link href="/auth/signup" className="text-primary hover:underline font-medium">
-                  Create one now
-                </Link>
-              </p>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="mt-8 pt-8 border-t border-border">
-              <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full" />
-                  <span>Secure Login</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                  <span>24/7 Support</span>
+              {/* Trust Indicators */}
+              <div className="mt-8 pt-8 border-t border-border">
+                <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    <span>Secure Login</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                    <span>24/7 Support</span>
+                  </div>
                 </div>
               </div>
             </div>

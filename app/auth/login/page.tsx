@@ -31,7 +31,7 @@ export default function LoginPage() {
       console.log("[v0] Login - Starting authentication")
 
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Login timeout - please try again")), 15000),
+        setTimeout(() => reject(new Error("Login timeout - please try again")), 30000),
       )
 
       const loginPromise = supabase.auth.signInWithPassword({

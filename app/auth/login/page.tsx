@@ -259,8 +259,8 @@ export default function LoginPage() {
         </div>
 
         {/* Right Side - Login Form */}
-        <div className="w-[480px] bg-background flex items-start justify-center p-12 pt-20">
-          <div className="w-full max-w-sm">
+        <div className="w-[480px] bg-background p-12 sticky top-0 h-screen overflow-y-auto">
+          <div className="w-full max-w-sm pt-20">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h2>
               <p className="text-muted-foreground">Sign in to access your analytics dashboard</p>

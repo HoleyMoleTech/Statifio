@@ -29,12 +29,9 @@ export default function LoginPage() {
 
     try {
       console.log("[v0] Login - Starting authentication")
+      console.log("[v0] Login - Email:", email)
 
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Login timeout - please try again")), 30000),
-      )
-
-      const loginPromise = supabase.auth.signInWithPassword({
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
         options: {
@@ -42,21 +39,27 @@ export default function LoginPage() {
         },
       })
 
-      const { error } = (await Promise.race([loginPromise, timeoutPromise])) as any
+      console.log("[v0] Login - Auth response:", { data: !!data, error: authError })
 
-      if (error) {
-        console.error("[v0] Login - Auth error:", error)
-        throw error
+      if (authError) {
+        console.error("[v0] Login - Auth error:", authError)
+        throw authError
       }
 
-      console.log("[v0] Login - Success, redirecting to profile")
+      if (!data.session) {
+        console.error("[v0] Login - No session returned")
+        throw new Error("No session returned from authentication")
+      }
+
+      console.log("[v0] Login - Success, session created, redirecting to profile")
 
       setTimeout(() => {
         router.push("/profile")
-      }, 100)
+        router.refresh()
+      }, 500)
     } catch (error: unknown) {
       console.error("[v0] Login - Error:", error)
-      setError(error instanceof Error ? error.message : "An error occurred")
+      setError(error instanceof Error ? error.message : "An error occurred during login")
       setIsLoading(false)
     }
   }
@@ -153,7 +156,7 @@ export default function LoginPage() {
             <div
               className="absolute inset-0"
               style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23000000' fillOpacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23000000' fillOpacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2H6zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
               }}
             />
           </div>

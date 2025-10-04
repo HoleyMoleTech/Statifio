@@ -70,7 +70,7 @@ export default function ProfilePage() {
     )
   }
 
-  if (!user) {
+  if (!authLoading && !user) {
     return (
       <MobileLayout title="Profile" showSearch={false} showNotifications={false}>
         <div className="text-center py-12 space-y-4">

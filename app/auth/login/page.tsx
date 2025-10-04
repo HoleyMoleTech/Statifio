@@ -12,38 +12,14 @@ import { MobileLayout } from "@/components/layout/mobile-layout"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { TrendingUp, BarChart3, Users, Eye, Target, Calendar, Mail, X } from "lucide-react"
+import { TrendingUp, BarChart3, Users, Eye, Target, Calendar } from "lucide-react"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [showEmailForm, setShowEmailForm] = useState(false)
   const router = useRouter()
-
-  const toggleEmailForm = () => {
-    const wasShowing = showEmailForm
-    console.log(`[v0] ${wasShowing ? "Closing" : "Opening"} email form, scrolling to ${wasShowing ? "top" : "form"}`)
-
-    setShowEmailForm(!showEmailForm)
-
-    // Scroll behavior with proper timing
-    setTimeout(() => {
-      if (wasShowing) {
-        // Closing form - scroll to top
-        window.scrollTo({ top: 0, behavior: "smooth" })
-        console.log("[v0] Scroll to top executed")
-      } else {
-        // Opening form - scroll to form
-        const formElement = document.getElementById("email-form")
-        if (formElement) {
-          formElement.scrollIntoView({ behavior: "smooth", block: "start" })
-          console.log("[v0] Scroll to form executed")
-        }
-      }
-    }, 200)
-  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -119,77 +95,49 @@ export default function LoginPage() {
                 <CardDescription className="text-muted-foreground">Sign in to access your account</CardDescription>
               </CardHeader>
               <CardContent>
-                {!showEmailForm ? (
-                  <div className="space-y-4">
-                    <Button
-                      onClick={toggleEmailForm}
-                      className="w-full bg-primary hover:bg-primary/90 h-12 text-base font-medium"
-                    >
-                      <Mail className="w-4 h-4 mr-2" />
-                      Continue with Email
-                    </Button>
-
-                    <div className="text-center text-sm text-muted-foreground">
-                      Don't have an account?{" "}
-                      <Link href="/auth/signup" className="text-primary hover:underline font-medium">
-                        Sign up
-                      </Link>
-                    </div>
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-foreground">
+                      Email
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="your@email.com"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="bg-input border"
+                    />
                   </div>
-                ) : (
-                  <div id="email-form" className="space-y-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-foreground">Sign in with email</h3>
-                      <Button variant="ghost" size="sm" onClick={toggleEmailForm} className="h-8 w-8 p-0">
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
 
-                    <form onSubmit={handleLogin} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="email" className="text-foreground">
-                          Email
-                        </Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="your@email.com"
-                          required
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="bg-input border"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="password" className="text-foreground">
-                          Password
-                        </Label>
-                        <Input
-                          id="password"
-                          type="password"
-                          required
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          className="bg-input border"
-                        />
-                      </div>
-
-                      {error && <p className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">{error}</p>}
-
-                      <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading}>
-                        {isLoading ? "Signing in..." : "Sign In"}
-                      </Button>
-                    </form>
-
-                    <div className="mt-6 text-center text-sm text-muted-foreground">
-                      Don't have an account?{" "}
-                      <Link href="/auth/signup" className="text-primary hover:underline font-medium">
-                        Sign up
-                      </Link>
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-foreground">
+                      Password
+                    </Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="bg-input border"
+                    />
                   </div>
-                )}
+
+                  {error && <p className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">{error}</p>}
+
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading}>
+                    {isLoading ? "Signing in..." : "Sign In"}
+                  </Button>
+                </form>
+
+                <div className="mt-6 text-center text-sm text-muted-foreground">
+                  Don't have an account?{" "}
+                  <Link href="/auth/signup" className="text-primary hover:underline font-medium">
+                    Sign up
+                  </Link>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -311,96 +259,66 @@ export default function LoginPage() {
         </div>
 
         {/* Right Side - Login Form */}
-        <div className="w-[480px] bg-background flex items-start justify-center p-12 pt-24">
+        <div className="w-[480px] bg-background flex items-start justify-center p-12 pt-20">
           <div className="w-full max-w-sm">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h2>
               <p className="text-muted-foreground">Sign in to access your analytics dashboard</p>
             </div>
 
-            {!showEmailForm ? (
-              <div className="space-y-6">
-                <Button
-                  onClick={toggleEmailForm}
-                  className="w-full bg-primary hover:bg-primary/90 h-12 text-base font-medium"
-                >
-                  <Mail className="w-4 h-4 mr-2" />
-                  Continue with Email
-                </Button>
-
-                <div className="text-center">
-                  <p className="text-sm text-muted-foreground">
-                    Don't have an account?{" "}
-                    <Link href="/auth/signup" className="text-primary hover:underline font-medium">
-                      Create one now
-                    </Link>
-                  </p>
-                </div>
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="desktop-email" className="text-foreground font-medium">
+                  Email Address
+                </Label>
+                <Input
+                  id="desktop-email"
+                  type="email"
+                  placeholder="your@email.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="bg-input border h-12 text-base"
+                />
               </div>
-            ) : (
-              <div id="email-form">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-semibold text-foreground">Sign in with email</h3>
-                  <Button variant="ghost" size="sm" onClick={toggleEmailForm} className="h-8 w-8 p-0">
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
 
-                <form onSubmit={handleLogin} className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-foreground font-medium">
-                      Email Address
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="your@email.com"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="bg-input border h-12 text-base"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="password" className="text-foreground font-medium">
-                      Password
-                    </Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="bg-input border h-12 text-base"
-                    />
-                  </div>
-
-                  {error && (
-                    <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-                      <p className="text-sm text-destructive">{error}</p>
-                    </div>
-                  )}
-
-                  <Button
-                    type="submit"
-                    className="w-full bg-primary hover:bg-primary/90 h-12 text-base font-medium"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Signing in..." : "Sign In"}
-                  </Button>
-                </form>
-
-                <div className="mt-8 text-center">
-                  <p className="text-sm text-muted-foreground">
-                    Don't have an account?{" "}
-                    <Link href="/auth/signup" className="text-primary hover:underline font-medium">
-                      Create one now
-                    </Link>
-                  </p>
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="desktop-password" className="text-foreground font-medium">
+                  Password
+                </Label>
+                <Input
+                  id="desktop-password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="bg-input border h-12 text-base"
+                />
               </div>
-            )}
+
+              {error && (
+                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+                  <p className="text-sm text-destructive">{error}</p>
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                className="w-full bg-primary hover:bg-primary/90 h-12 text-base font-medium"
+                disabled={isLoading}
+              >
+                {isLoading ? "Signing in..." : "Sign In"}
+              </Button>
+            </form>
+
+            <div className="mt-8 text-center">
+              <p className="text-sm text-muted-foreground">
+                Don't have an account?{" "}
+                <Link href="/auth/signup" className="text-primary hover:underline font-medium">
+                  Create one now
+                </Link>
+              </p>
+            </div>
 
             {/* Trust Indicators */}
             <div className="mt-8 pt-8 border-t border-border">

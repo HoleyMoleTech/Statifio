@@ -33,6 +33,15 @@ export default function SignUpPage() {
 
   const toggleEmailForm = () => {
     setShowEmailForm(!showEmailForm)
+    if (!showEmailForm) {
+      setTimeout(() => {
+        emailFormRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "nearest",
+        })
+      }, 100)
+    }
   }
 
   const validateField = (field: string, value: string) => {
@@ -161,6 +170,7 @@ export default function SignUpPage() {
               </div>
 
               <div
+                ref={emailFormRef}
                 className={`transition-all duration-300 ease-in-out overflow-hidden ${
                   showEmailForm ? "max-h-[1200px] opacity-100" : "max-h-0 opacity-0"
                 }`}

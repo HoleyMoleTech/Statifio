@@ -132,6 +132,13 @@
     flex-shrink: 0;
   }
 
+  /* Ensure SVGs with explicit size classes respect them */
+  svg[class*="w-"],
+  svg[class*="h-"] {
+    width: auto;
+    height: auto;
+  }
+
   /* Clean heading hierarchy */
   h1 {
     @apply text-2xl font-semibold tracking-tight leading-tight text-foreground;

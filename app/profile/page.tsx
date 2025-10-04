@@ -14,7 +14,7 @@ import Link from "next/link"
 import { Toaster } from "sonner"
 
 export default function ProfilePage() {
-  const { user } = useAuth()
+  const { user, isLoading: authLoading } = useAuth()
   const { profile, isLoading, error, refreshProfile, updateProfile } = useProfile()
   const router = useRouter()
   const supabase = createClient()
@@ -32,17 +32,13 @@ export default function ProfilePage() {
     updateProfile({ avatar_url: newAvatarUrl || undefined })
   }
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
       <MobileLayout title="Profile" showSearch={false} showNotifications={true}>
         <div className="flex items-center justify-center py-12">
           <div className="text-center space-y-4">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-muted-foreground">Loading profile...</p>
-            <Button variant="outline" size="sm" onClick={handleRetry} className="mt-4 bg-transparent">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Retry
-            </Button>
           </div>
         </div>
       </MobileLayout>

@@ -40,7 +40,7 @@ export default function SignUpPage() {
           block: "nearest",
           inline: "nearest",
         })
-      }, 100)
+      }, 350) // Increased timeout from 100ms to 350ms to match CSS transition duration
     }
   }
 

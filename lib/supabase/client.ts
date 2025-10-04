@@ -1,38 +1,5 @@
 import { createBrowserClient } from "@supabase/ssr"
 
 export function createClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-  console.log("[v0] Supabase client - URL exists:", !!url)
-  console.log("[v0] Supabase client - Key exists:", !!key)
-
-  if (!url || !key) {
-    console.error("[v0] Missing Supabase environment variables for browser client")
-    console.error("[v0] URL:", url)
-    console.error("[v0] Key:", key ? "exists" : "missing")
-    // Return a mock client to prevent crashes during development
-    return {
-      auth: {
-        getUser: () => Promise.resolve({ data: { user: null }, error: null }),
-        signInWithPassword: () => Promise.resolve({ data: null, error: new Error("Supabase not configured") }),
-        signUp: () => Promise.resolve({ data: null, error: new Error("Supabase not configured") }),
-        signOut: () => Promise.resolve({ error: null }),
-        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
-        signInWithOAuth: () => Promise.resolve({ data: null, error: new Error("Supabase not configured") }),
-      },
-      from: () => ({
-        select: () => ({
-          eq: () => ({
-            single: () => Promise.resolve({ data: null, error: new Error("Supabase not configured") }),
-          }),
-        }),
-        update: () => ({
-          eq: () => Promise.resolve({ data: null, error: new Error("Supabase not configured") }),
-        }),
-      }),
-    } as any
-  }
-
-  return createBrowserClient(url, key)
+  return createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 }

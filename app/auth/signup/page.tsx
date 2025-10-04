@@ -32,31 +32,7 @@ export default function SignUpPage() {
   const router = useRouter()
 
   const toggleEmailForm = () => {
-    const wasShowing = showEmailForm
     setShowEmailForm(!showEmailForm)
-
-    if (wasShowing) {
-      // Closing the form - scroll to top
-      console.log("[v0] Closing email form, scrolling to top")
-      setTimeout(() => {
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        })
-        console.log("[v0] Scroll to top executed")
-      }, 200) // Slightly longer delay to ensure form collapse animation completes
-    } else {
-      // Opening the form - scroll to form
-      console.log("[v0] Opening email form, scrolling to form")
-      setTimeout(() => {
-        emailFormRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-          inline: "nearest",
-        })
-        console.log("[v0] Scroll to form executed")
-      }, 200) // Slightly longer delay to ensure form expand animation completes
-    }
   }
 
   const validateField = (field: string, value: string) => {
@@ -147,7 +123,7 @@ export default function SignUpPage() {
   return (
     <MobileLayout title="Join Statifio" showBack={true} showBottomNav={true}>
       <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-lg">
           <Card className="bg-card/50 backdrop-blur-sm border-border/50 shadow-xl">
             <CardHeader className="text-center space-y-4">
               <div className="mx-auto w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center">
@@ -185,9 +161,8 @@ export default function SignUpPage() {
               </div>
 
               <div
-                ref={emailFormRef}
                 className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  showEmailForm ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+                  showEmailForm ? "max-h-[1200px] opacity-100" : "max-h-0 opacity-0"
                 }`}
               >
                 <form onSubmit={handleSignUp} className="space-y-4 pt-2">

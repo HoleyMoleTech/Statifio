@@ -311,7 +311,7 @@ export default function LoginPage() {
         </div>
 
         {/* Right Side - Login Form */}
-        <div className="w-[480px] bg-background flex items-center justify-center p-12">
+        <div className="w-[480px] bg-background flex items-start justify-center p-12 pt-24">
           <div className="w-full max-w-sm">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h2>

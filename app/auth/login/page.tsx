@@ -23,7 +23,6 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    const supabase = createClient()
     setIsLoading(true)
     setError(null)
 
@@ -31,12 +30,11 @@ export default function LoginPage() {
       console.log("[v0] Login - Starting authentication")
       console.log("[v0] Login - Email:", email)
 
+      const supabase = createClient()
+
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
-        options: {
-          emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/profile`,
-        },
       })
 
       console.log("[v0] Login - Auth response:", { data: !!data, error: authError })
@@ -51,8 +49,12 @@ export default function LoginPage() {
         throw new Error("No session returned from authentication")
       }
 
-      console.log("[v0] Login - Success, session created, redirecting to profile")
+      console.log("[v0] Login - Success, session created")
 
+      // Small delay to ensure session is set
+      await new Promise((resolve) => setTimeout(resolve, 500))
+
+      console.log("[v0] Login - Redirecting to profile")
       router.push("/profile")
       router.refresh()
     } catch (error: unknown) {

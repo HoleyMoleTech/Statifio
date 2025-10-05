@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { createServiceClient } from "@/lib/supabase/service"
+import { queryCache } from "@/lib/cache/query-cache"
 
 export interface TeamData {
   external_id: string
@@ -46,8 +47,14 @@ export interface PlayerData {
 }
 
 export class DatabaseService {
+  private serviceClient: ReturnType<typeof createServiceClient> | null = null
+  private teamIdCache: Map<string, string | null> = new Map()
+
   private getServiceClient() {
-    return createServiceClient()
+    if (!this.serviceClient) {
+      this.serviceClient = createServiceClient()
+    }
+    return this.serviceClient
   }
 
   private async getClient() {
@@ -86,6 +93,12 @@ export class DatabaseService {
       return []
     }
 
+    const cacheKey = `teams:${gameType}:${sportType}`
+    const cached = queryCache.get<any[]>(cacheKey)
+    if (cached) {
+      return cached
+    }
+
     const supabase = await this.getClient()
 
     const { data, error } = await supabase
@@ -100,13 +113,21 @@ export class DatabaseService {
       return []
     }
 
-    return data || []
+    const result = data || []
+    queryCache.set(cacheKey, result, 10 * 60 * 1000)
+    return result
   }
 
   async getTeamsByExternalIds(externalIds: string[], gameType: string, sportType = "esports"): Promise<any[]> {
     if (!this.isSupabaseConfigured()) {
       console.warn("[v0] Supabase not configured, returning empty teams array")
       return []
+    }
+
+    const cacheKey = `teams:external:${gameType}:${sportType}:${externalIds.sort().join(",")}`
+    const cached = queryCache.get<any[]>(cacheKey)
+    if (cached) {
+      return cached
     }
 
     const supabase = await this.getClient()
@@ -123,7 +144,9 @@ export class DatabaseService {
       return []
     }
 
-    return data || []
+    const result = data || []
+    queryCache.set(cacheKey, result, 15 * 60 * 1000)
+    return result
   }
 
   async saveMatches(matches: MatchData[]): Promise<void> {
@@ -144,7 +167,6 @@ export class DatabaseService {
       return
     }
 
-    // Resolve external team IDs to actual UUIDs
     const resolvedMatches = await Promise.all(
       validInputMatches.map(async (match) => {
         console.log(
@@ -164,7 +186,6 @@ export class DatabaseService {
       }),
     )
 
-    // Filter out matches where we couldn't resolve team IDs
     const validMatches = resolvedMatches.filter((match) => match.home_team_id && match.away_team_id)
 
     console.log(`[v0] Valid matches after filtering: ${validMatches.length} out of ${matches.length}`)
@@ -200,6 +221,12 @@ export class DatabaseService {
       return []
     }
 
+    const cacheKey = `matches:${gameType}:${sportType}:${limit}`
+    const cached = queryCache.get<any[]>(cacheKey)
+    if (cached) {
+      return cached
+    }
+
     const supabase = await this.getClient()
 
     const { data, error } = await supabase
@@ -219,7 +246,9 @@ export class DatabaseService {
       return []
     }
 
-    return data || []
+    const result = data || []
+    queryCache.set(cacheKey, result, 2 * 60 * 1000)
+    return result
   }
 
   async savePlayers(players: PlayerData[]): Promise<void> {
@@ -247,6 +276,12 @@ export class DatabaseService {
       return []
     }
 
+    const cacheKey = `players:team:${teamId}`
+    const cached = queryCache.get<any[]>(cacheKey)
+    if (cached) {
+      return cached
+    }
+
     const supabase = await this.getClient()
 
     const { data, error } = await supabase
@@ -260,7 +295,9 @@ export class DatabaseService {
       return []
     }
 
-    return data || []
+    const result = data || []
+    queryCache.set(cacheKey, result, 30 * 60 * 1000)
+    return result
   }
 
   async isDataFresh(table: string, gameType: string, maxAgeMinutes = 30): Promise<boolean> {
@@ -308,7 +345,6 @@ export class DatabaseService {
     const homeTeamId = pandaMatch.opponents?.[0]?.opponent?.id?.toString() || null
     const awayTeamId = pandaMatch.opponents?.[1]?.opponent?.id?.toString() || null
 
-    // Skip matches with missing team data
     if (!homeTeamId || !awayTeamId) {
       console.warn(
         `[v0] Skipping match ${pandaMatch.id} due to missing team data: home=${homeTeamId}, away=${awayTeamId}`,
@@ -344,6 +380,11 @@ export class DatabaseService {
       return null
     }
 
+    const cacheKey = `${externalId}:${gameType}:${sportType}`
+    if (this.teamIdCache.has(cacheKey)) {
+      return this.teamIdCache.get(cacheKey)!
+    }
+
     const supabase = this.getServiceClient()
 
     console.log(`[v0] Looking up team ID for external_id=${externalId}, game_type=${gameType}, sport_type=${sportType}`)
@@ -361,11 +402,13 @@ export class DatabaseService {
         `[v0] Could not find team with external_id=${externalId}, game_type=${gameType}, sport_type=${sportType}. Error:`,
         error.message,
       )
+      this.teamIdCache.set(cacheKey, null)
       return null
     }
 
     if (!data || data.length === 0) {
       console.warn(`[v0] No team found with external_id=${externalId}, game_type=${gameType}, sport_type=${sportType}`)
+      this.teamIdCache.set(cacheKey, null)
       return null
     }
 
@@ -376,7 +419,9 @@ export class DatabaseService {
     }
 
     console.log(`[v0] Found team ID ${data[0].id} for external_id=${externalId}`)
-    return data[0].id
+    const teamId = data[0].id
+    this.teamIdCache.set(cacheKey, teamId)
+    return teamId
   }
 }
 

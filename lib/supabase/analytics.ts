@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
+import { queryCache } from "@/lib/cache/query-cache"
 
 export interface TeamPerformanceStats {
   total_matches: number
@@ -76,8 +77,13 @@ export interface MatchStatistics {
 }
 
 export class SupabaseAnalyticsService {
+  private clientPromise: Promise<ReturnType<typeof createClient>> | null = null
+
   private async getClient() {
-    return await createClient()
+    if (!this.clientPromise) {
+      this.clientPromise = createClient()
+    }
+    return await this.clientPromise
   }
 
   async getTeamPerformanceStats(
@@ -86,6 +92,12 @@ export class SupabaseAnalyticsService {
     daysBack = 30,
   ): Promise<TeamPerformanceStats | null> {
     try {
+      const cacheKey = `team-perf:${teamId}:${gameType}:${daysBack}`
+      const cached = queryCache.get<TeamPerformanceStats>(cacheKey)
+      if (cached) {
+        return cached
+      }
+
       const supabase = await this.getClient()
 
       const { data, error } = await supabase
@@ -101,6 +113,10 @@ export class SupabaseAnalyticsService {
         return null
       }
 
+      if (data) {
+        queryCache.set(cacheKey, data, 5 * 60 * 1000)
+      }
+
       return data
     } catch (error) {
       console.error("Error in getTeamPerformanceStats:", error)
@@ -110,6 +126,12 @@ export class SupabaseAnalyticsService {
 
   async getLiveMatchesCount(): Promise<LiveMatchesCount[]> {
     try {
+      const cacheKey = "live-matches-count"
+      const cached = queryCache.get<LiveMatchesCount[]>(cacheKey)
+      if (cached) {
+        return cached
+      }
+
       const supabase = await this.getClient()
 
       const { data, error } = await supabase.rpc("get_live_matches_count")
@@ -119,7 +141,10 @@ export class SupabaseAnalyticsService {
         return []
       }
 
-      return data || []
+      const result = data || []
+      queryCache.set(cacheKey, result, 60 * 1000)
+
+      return result
     } catch (error) {
       console.error("Error in getLiveMatchesCount:", error)
       return []
@@ -133,6 +158,12 @@ export class SupabaseAnalyticsService {
     region?: string,
   ): Promise<PlayerRanking[]> {
     try {
+      const cacheKey = `player-rankings:${gameType}:${rankingType}:${limit}:${region || "all"}`
+      const cached = queryCache.get<PlayerRanking[]>(cacheKey)
+      if (cached) {
+        return cached
+      }
+
       const supabase = await this.getClient()
 
       let query = supabase
@@ -162,7 +193,10 @@ export class SupabaseAnalyticsService {
         return []
       }
 
-      return data || []
+      const result = data || []
+      queryCache.set(cacheKey, result, 15 * 60 * 1000)
+
+      return result
     } catch (error) {
       console.error("Error in getPlayerRankings:", error)
       return []
@@ -171,6 +205,12 @@ export class SupabaseAnalyticsService {
 
   async getTeamRankings(gameType: string, rankingType = "global", limit = 50, region?: string): Promise<TeamRanking[]> {
     try {
+      const cacheKey = `team-rankings:${gameType}:${rankingType}:${limit}:${region || "all"}`
+      const cached = queryCache.get<TeamRanking[]>(cacheKey)
+      if (cached) {
+        return cached
+      }
+
       const supabase = await this.getClient()
 
       let query = supabase
@@ -200,7 +240,10 @@ export class SupabaseAnalyticsService {
         return []
       }
 
-      return data || []
+      const result = data || []
+      queryCache.set(cacheKey, result, 15 * 60 * 1000)
+
+      return result
     } catch (error) {
       console.error("Error in getTeamRankings:", error)
       return []
@@ -209,6 +252,12 @@ export class SupabaseAnalyticsService {
 
   async getMatchStatistics(matchId: string): Promise<MatchStatistics[]> {
     try {
+      const cacheKey = `match-stats:${matchId}`
+      const cached = queryCache.get<MatchStatistics[]>(cacheKey)
+      if (cached) {
+        return cached
+      }
+
       const supabase = await this.getClient()
 
       const { data, error } = await supabase.from("match_statistics").select("*").eq("match_id", matchId)
@@ -218,7 +267,10 @@ export class SupabaseAnalyticsService {
         return []
       }
 
-      return data || []
+      const result = data || []
+      queryCache.set(cacheKey, result, 10 * 60 * 1000)
+
+      return result
     } catch (error) {
       console.error("Error in getMatchStatistics:", error)
       return []

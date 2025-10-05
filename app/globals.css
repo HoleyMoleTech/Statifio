@@ -175,12 +175,13 @@
     text-wrap: pretty;
   }
 
-  /* Esports-specific gradient text */
+  /* Fixed gradient text to use defined color variables for proper visibility */
   .gradient-text {
-    background: linear-gradient(135deg, var(--color-esports-primary), var(--color-esports-accent));
+    background: linear-gradient(135deg, var(--color-primary), var(--color-chart-1));
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
+    font-weight: 700;
   }
 
   /* Enhanced glass morphism for cards */

@@ -22,7 +22,7 @@ export function HeroSection() {
       <div className="text-center space-y-6">
         <div className="space-y-4">
           <h1 className="text-5xl font-bold text-foreground text-balance leading-tight">
-            Welcome to <span className="gradient-text">Statifio</span>
+            Welcome to <span className="text-chart-1 font-bold">Statifio</span>
           </h1>
           <p className="text-lg text-muted-foreground text-pretty max-w-2xl mx-auto leading-relaxed">
             Your ultimate destination for real-time eSports and football statistics, analytics, and insights

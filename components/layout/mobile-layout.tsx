@@ -49,7 +49,6 @@ export function MobileLayout({
     })()
 
   const handleBackClick = () => {
-    console.log("[v0] MobileLayout: Back button clicked from", pathname)
     router.back()
   }
 
@@ -72,7 +71,9 @@ export function MobileLayout({
         </div>
       </ErrorBoundary>
 
-      <main className={`flex-1 pt-20 px-6 py-6 max-w-6xl mx-auto w-full relative ${showBottomNav ? "pb-24" : "pb-6"}`}>
+      <main
+        className={`flex-1 pt-20 container max-w-7xl mx-auto w-full px-4 py-6 relative ${showBottomNav ? "pb-24" : "pb-6"}`}
+      >
         {isLoading && (
           <div className="absolute inset-0 glass z-40 flex items-center justify-center">
             <div className="flex items-center gap-3 text-muted-foreground">

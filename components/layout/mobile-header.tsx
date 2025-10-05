@@ -46,7 +46,6 @@ export function MobileHeader({
   const { navigateTo, isLoading: navLoading } = useNavigation()
 
   const handleProfileClick = () => {
-    console.log("[v0] MobileHeader: Navigating to profile")
     navigateTo("/profile")
   }
 
@@ -61,16 +60,28 @@ export function MobileHeader({
   )
 
   return (
-    <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border">
-      <div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3">
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80 border-b border-border shadow-sm">
+      <div className="container max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 py-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           {showMenu && (
-            <Button variant="ghost" size="sm" onClick={onMenuClick} className="p-2" disabled={navLoading}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onMenuClick}
+              className="p-2 hover:bg-accent"
+              disabled={navLoading}
+            >
               <Menu className="h-5 w-5" />
             </Button>
           )}
           {showBack && (
-            <Button variant="ghost" size="sm" onClick={onBackClick} className="p-2" disabled={navLoading}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onBackClick}
+              className="p-2 hover:bg-accent"
+              disabled={navLoading}
+            >
               <svg
                 className={`h-5 w-5 ${navLoading ? "animate-pulse" : ""}`}
                 fill="none"
@@ -81,13 +92,22 @@ export function MobileHeader({
               </svg>
             </Button>
           )}
-          <Logo size="md" showText={false} />
+          <div className="flex items-center">
+            <Logo size="lg" showText={true} className="transition-transform hover:scale-105" />
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {showSearch && (
-            <Button variant="ghost" size="sm" onClick={onSearchClick} className="p-2" disabled={navLoading}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onSearchClick}
+              className="p-2 hover:bg-accent transition-colors"
+              disabled={navLoading}
+            >
               <Search className="h-5 w-5" />
+              <span className="sr-only">Search</span>
             </Button>
           )}
 
@@ -96,14 +116,15 @@ export function MobileHeader({
               variant="ghost"
               size="sm"
               onClick={onNotificationClick}
-              className="p-2 relative"
+              className="p-2 relative hover:bg-accent transition-colors"
               disabled={navLoading}
             >
               <Bell className="h-5 w-5" />
+              <span className="sr-only">Notifications</span>
               {notificationCount > 0 && (
                 <Badge
                   variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                  className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs font-semibold"
                 >
                   {notificationCount > 9 ? "9+" : notificationCount}
                 </Badge>
@@ -117,7 +138,8 @@ export function MobileHeader({
             <button
               onClick={handleProfileClick}
               disabled={navLoading}
-              className="focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-full disabled:opacity-50"
+              className="focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-full disabled:opacity-50 transition-all hover:scale-105"
+              aria-label="View profile"
             >
               <UserAvatar {...avatarProps} />
             </button>

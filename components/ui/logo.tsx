@@ -12,25 +12,25 @@ interface LogoProps {
 const sizeClasses = {
   sm: "w-6 h-6",
   md: "w-8 h-8",
-  lg: "w-12 h-12",
-  xl: "w-16 h-16",
-  "2xl": "w-20 h-20",
+  lg: "w-10 h-10 sm:w-12 sm:h-12",
+  xl: "w-14 h-14 sm:w-16 sm:h-16",
+  "2xl": "w-18 h-18 sm:w-20 sm:h-20",
 }
 
 const textSizeClasses = {
-  sm: "text-sm",
-  md: "text-lg",
-  lg: "text-xl",
-  xl: "text-2xl",
-  "2xl": "text-3xl",
+  sm: "text-sm font-semibold",
+  md: "text-base font-bold",
+  lg: "text-lg sm:text-xl font-bold tracking-tight",
+  xl: "text-xl sm:text-2xl font-bold tracking-tight",
+  "2xl": "text-2xl sm:text-3xl font-bold tracking-tight",
 }
 
 const gapClasses = {
   sm: "gap-1.5",
   md: "gap-2",
-  lg: "gap-2",
-  xl: "gap-2",
-  "2xl": "gap-1.5", // Closer spacing for larger logo
+  lg: "gap-2.5 sm:gap-3",
+  xl: "gap-3 sm:gap-3.5",
+  "2xl": "gap-3.5 sm:gap-4",
 }
 
 export function Logo({ size = "md", showText = true, className, href = "/" }: LogoProps) {
@@ -42,14 +42,18 @@ export function Logo({ size = "md", showText = true, className, href = "/" }: Lo
         width={80}
         height={80}
         className={cn("object-contain", sizeClasses[size])}
+        priority
       />
-      {showText && <span className={cn("font-bold text-foreground", textSizeClasses[size])}>Statifio</span>}
+      {showText && <span className={cn("text-foreground whitespace-nowrap", textSizeClasses[size])}>Statifio</span>}
     </div>
   )
 
   if (href) {
     return (
-      <Link href={href} className="hover:opacity-80 transition-opacity">
+      <Link
+        href={href}
+        className="hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-lg"
+      >
         {logoContent}
       </Link>
     )

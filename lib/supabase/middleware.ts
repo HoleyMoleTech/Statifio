@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
 export async function updateSession(request: NextRequest) {
+  console.log("[v0] Middleware - Processing request:", request.nextUrl.pathname)
   console.log("[v0] Middleware - SUPABASE_URL:", !!process.env.NEXT_PUBLIC_SUPABASE_URL)
   console.log("[v0] Middleware - SUPABASE_ANON_KEY:", !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
@@ -40,7 +41,10 @@ export async function updateSession(request: NextRequest) {
 
     const {
       data: { user },
+      error: userError,
     } = await supabase.auth.getUser()
+
+    console.log("[v0] Middleware - User check:", user?.id || "no user", "Error:", userError?.message || "none")
 
     const publicRoutes = [
       "/",
@@ -61,36 +65,61 @@ export async function updateSession(request: NextRequest) {
 
     const isAdminRoute = request.nextUrl.pathname.startsWith("/admin")
 
-    if (isAdminRoute && user) {
+    if (isAdminRoute) {
+      console.log("[v0] Middleware - Admin route accessed:", request.nextUrl.pathname)
+
+      if (!user) {
+        console.log("[v0] Middleware - No user found for admin route, redirecting to login")
+        const url = request.nextUrl.clone()
+        url.pathname = "/auth/login"
+        url.searchParams.set("redirectTo", request.nextUrl.pathname)
+        return NextResponse.redirect(url)
+      }
+
       try {
-        const { data: userData } = await supabase.from("users").select("is_admin").eq("id", user.id).single()
+        console.log("[v0] Middleware - Checking admin status for user:", user.id)
+        const { data: userData, error: adminError } = await supabase
+          .from("users")
+          .select("is_admin")
+          .eq("id", user.id)
+          .single()
+
+        console.log("[v0] Middleware - Admin check result:", {
+          userId: user.id,
+          isAdmin: userData?.is_admin,
+          error: adminError?.message,
+        })
+
+        if (adminError) {
+          console.error("[v0] Middleware - Admin check database error:", adminError)
+          // On database error, allow through and let the layout handle it
+          return supabaseResponse
+        }
 
         if (!userData?.is_admin) {
-          console.log(`[v0] Security - Unauthorized admin access attempt by user ${user.id}`)
-
-          // User is not admin, redirect to dashboard
+          console.log("[v0] Middleware - User is not admin, redirecting to dashboard")
           const url = request.nextUrl.clone()
           url.pathname = "/dashboard"
           return NextResponse.redirect(url)
-        } else {
-          console.log(`[v0] Security - Admin access granted to user ${user.id} for ${request.nextUrl.pathname}`)
         }
+
+        console.log("[v0] Middleware - Admin access granted for user:", user.id)
       } catch (adminCheckError) {
-        console.log("[v0] Admin check failed, redirecting to dashboard:", adminCheckError)
-        const url = request.nextUrl.clone()
-        url.pathname = "/dashboard"
-        return NextResponse.redirect(url)
+        console.error("[v0] Middleware - Admin check exception:", adminCheckError)
+        // On exception, allow through and let the layout handle it
+        return supabaseResponse
       }
     }
 
     if (!user && !isPublicRoute) {
-      // no user, potentially respond by redirecting the user to the login page
+      console.log("[v0] Middleware - Unauthenticated access to protected route, redirecting to login")
       const url = request.nextUrl.clone()
       url.pathname = "/auth/login"
+      url.searchParams.set("redirectTo", request.nextUrl.pathname)
       return NextResponse.redirect(url)
     }
   } catch (error) {
-    console.log("[v0] Middleware - Auth check failed:", error)
+    console.error("[v0] Middleware - Auth check failed:", error)
     // Continue without auth check if there's an error
   }
 

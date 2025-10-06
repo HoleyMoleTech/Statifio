@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,27 +11,75 @@ import { MobileLayout } from "@/components/layout/mobile-layout"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { TrendingUp, BarChart3, Users, Eye, Target, Calendar } from "lucide-react"
+import {
+  TrendingUp,
+  BarChart3,
+  Users,
+  Eye,
+  Target,
+  Calendar,
+  EyeOff,
+  AlertCircle,
+  CheckCircle2,
+  Loader2,
+} from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [validationErrors, setValidationErrors] = useState<{ email?: string; password?: string }>({})
   const router = useRouter()
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  const validatePassword = (password: string): boolean => {
+    return password.length >= 6
+  }
+
+  const handleEmailBlur = () => {
+    if (email && !validateEmail(email)) {
+      setValidationErrors((prev) => ({ ...prev, email: "Please enter a valid email address" }))
+    } else {
+      setValidationErrors((prev) => ({ ...prev, email: undefined }))
+    }
+  }
+
+  const handlePasswordBlur = () => {
+    if (password && !validatePassword(password)) {
+      setValidationErrors((prev) => ({ ...prev, password: "Password must be at least 6 characters" }))
+    } else {
+      setValidationErrors((prev) => ({ ...prev, password: undefined }))
+    }
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-
     setError(null)
     setIsLoading(true)
 
-    try {
-      console.log("[v0] Login - Form submitted")
-      console.log("[v0] Login - Email:", email)
+    const errors: { email?: string; password?: string } = {}
+    if (!validateEmail(email)) {
+      errors.email = "Please enter a valid email address"
+    }
+    if (!validatePassword(password)) {
+      errors.password = "Password must be at least 6 characters"
+    }
 
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors)
+      setIsLoading(false)
+      return
+    }
+
+    try {
       const supabase = createClient()
-      console.log("[v0] Login - Calling signInWithPassword")
 
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
@@ -40,26 +87,30 @@ export default function LoginPage() {
       })
 
       if (authError) {
-        console.error("[v0] Login - Auth error:", authError.message)
-        setError(authError.message)
+        let userMessage = "Unable to sign in. Please check your credentials and try again."
+        if (authError.message.includes("Invalid login credentials")) {
+          userMessage = "Invalid email or password. Please try again."
+        } else if (authError.message.includes("Email not confirmed")) {
+          userMessage = "Please verify your email address before signing in."
+        } else if (authError.message.includes("Too many requests")) {
+          userMessage = "Too many login attempts. Please wait a moment and try again."
+        }
+        setError(userMessage)
         setIsLoading(false)
         return
       }
 
       if (!data.session) {
-        console.error("[v0] Login - No session in response")
-        setError("Authentication failed - no session created")
+        setError("Authentication failed. Please try again.")
         setIsLoading(false)
         return
       }
 
-      console.log("[v0] Login - Authentication successful, redirecting to dashboard")
-
-      window.location.href = "/dashboard"
+      router.push("/dashboard")
+      router.refresh()
     } catch (err) {
-      console.error("[v0] Login - Unexpected error:", err)
-      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred"
-      setError(errorMessage)
+      console.error("[v0] Login error:", err)
+      setError("An unexpected error occurred. Please try again.")
       setIsLoading(false)
     }
   }
@@ -87,21 +138,25 @@ export default function LoginPage() {
     <MobileLayout title="Sign In" showBack={true} showBottomNav={true}>
       {/* Mobile Layout */}
       <div className="lg:hidden">
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center p-4">
           <div className="w-full max-w-sm">
-            <Card className="bg-card border">
-              <CardHeader className="text-center">
-                <div className="flex justify-center mb-4">
+            <Card className="bg-card border shadow-lg">
+              <CardHeader className="text-center space-y-4">
+                <div className="flex justify-center">
                   <Logo size="lg" showText={true} href={null} />
                 </div>
-                <CardTitle className="text-2xl font-bold text-foreground">Welcome Back</CardTitle>
-                <CardDescription className="text-muted-foreground">Sign in to access your account</CardDescription>
+                <div>
+                  <CardTitle className="text-2xl font-bold text-foreground">Welcome Back</CardTitle>
+                  <CardDescription className="text-muted-foreground mt-2">
+                    Sign in to access your analytics dashboard
+                  </CardDescription>
+                </div>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleLogin} className="space-y-4">
+                <form onSubmit={handleLogin} className="space-y-5">
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-foreground">
-                      Email
+                    <Label htmlFor="email" className="text-foreground font-medium">
+                      Email Address
                     </Label>
                     <Input
                       id="email"
@@ -109,31 +164,86 @@ export default function LoginPage() {
                       placeholder="your@email.com"
                       required
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="bg-input border"
+                      onChange={(e) => {
+                        setEmail(e.target.value)
+                        if (validationErrors.email) {
+                          setValidationErrors((prev) => ({ ...prev, email: undefined }))
+                        }
+                      }}
+                      onBlur={handleEmailBlur}
+                      className={`bg-input border h-11 ${validationErrors.email ? "border-destructive" : ""}`}
                       disabled={isLoading}
+                      aria-invalid={!!validationErrors.email}
+                      aria-describedby={validationErrors.email ? "email-error" : undefined}
                     />
+                    {validationErrors.email && (
+                      <p id="email-error" className="text-sm text-destructive flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {validationErrors.email}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="password" className="text-foreground">
+                    <Label htmlFor="password" className="text-foreground font-medium">
                       Password
                     </Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="bg-input border"
-                      disabled={isLoading}
-                    />
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        required
+                        value={password}
+                        onChange={(e) => {
+                          setPassword(e.target.value)
+                          if (validationErrors.password) {
+                            setValidationErrors((prev) => ({ ...prev, password: undefined }))
+                          }
+                        }}
+                        onBlur={handlePasswordBlur}
+                        className={`bg-input border h-11 pr-10 ${validationErrors.password ? "border-destructive" : ""}`}
+                        disabled={isLoading}
+                        aria-invalid={!!validationErrors.password}
+                        aria-describedby={validationErrors.password ? "password-error" : undefined}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        disabled={isLoading}
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    {validationErrors.password && (
+                      <p id="password-error" className="text-sm text-destructive flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {validationErrors.password}
+                      </p>
+                    )}
                   </div>
 
-                  {error && <p className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">{error}</p>}
+                  {error && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
 
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading}>
-                    {isLoading ? "Signing in..." : "Sign In"}
+                  <Button
+                    type="submit"
+                    className="w-full bg-primary hover:bg-primary/90 h-11 font-medium"
+                    disabled={isLoading || !!validationErrors.email || !!validationErrors.password}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Signing in...
+                      </>
+                    ) : (
+                      "Sign In"
+                    )}
                   </Button>
                 </form>
 
@@ -142,6 +252,19 @@ export default function LoginPage() {
                   <Link href="/auth/signup" className="text-primary hover:underline font-medium">
                     Sign up
                   </Link>
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-border">
+                  <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <CheckCircle2 className="h-3 w-3 text-green-600" />
+                      <span>Secure Connection</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <CheckCircle2 className="h-3 w-3 text-blue-600" />
+                      <span>Privacy Protected</span>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -157,7 +280,7 @@ export default function LoginPage() {
             <div
               className="absolute inset-0"
               style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23000000' fillOpacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2H6zM6 34v-4H4v4H0v2h4v4h2V6h4V4H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23000000' fillOpacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
               }}
             />
           </div>
@@ -281,39 +404,86 @@ export default function LoginPage() {
                   placeholder="your@email.com"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-input border h-12 text-base"
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    if (validationErrors.email) {
+                      setValidationErrors((prev) => ({ ...prev, email: undefined }))
+                    }
+                  }}
+                  onBlur={handleEmailBlur}
+                  className={`bg-input border h-12 text-base ${validationErrors.email ? "border-destructive" : ""}`}
                   disabled={isLoading}
+                  aria-invalid={!!validationErrors.email}
+                  aria-describedby={validationErrors.email ? "desktop-email-error" : undefined}
                 />
+                {validationErrors.email && (
+                  <p id="desktop-email-error" className="text-sm text-destructive flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {validationErrors.email}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="desktop-password" className="text-foreground font-medium">
                   Password
                 </Label>
-                <Input
-                  id="desktop-password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="bg-input border h-12 text-base"
-                  disabled={isLoading}
-                />
+                <div className="relative">
+                  <Input
+                    id="desktop-password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value)
+                      if (validationErrors.password) {
+                        setValidationErrors((prev) => ({ ...prev, password: undefined }))
+                      }
+                    }}
+                    onBlur={handlePasswordBlur}
+                    className={`bg-input border h-12 text-base pr-10 ${validationErrors.password ? "border-destructive" : ""}`}
+                    disabled={isLoading}
+                    aria-invalid={!!validationErrors.password}
+                    aria-describedby={validationErrors.password ? "desktop-password-error" : undefined}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    disabled={isLoading}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+                {validationErrors.password && (
+                  <p id="desktop-password-error" className="text-sm text-destructive flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {validationErrors.password}
+                  </p>
+                )}
               </div>
 
               {error && (
-                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-                  <p className="text-sm text-destructive">{error}</p>
-                </div>
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               )}
 
               <Button
                 type="submit"
                 className="w-full bg-primary hover:bg-primary/90 h-12 text-base font-medium"
-                disabled={isLoading}
+                disabled={isLoading || !!validationErrors.email || !!validationErrors.password}
               >
-                {isLoading ? "Signing in..." : "Sign In"}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign In"
+                )}
               </Button>
             </form>
 
@@ -326,15 +496,14 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Trust Indicators */}
             <div className="mt-8 pt-8 border-t border-border">
               <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full" />
+                  <CheckCircle2 className="h-3 w-3 text-green-600" />
                   <span>Secure Login</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                  <CheckCircle2 className="h-3 w-3 text-blue-600" />
                   <span>24/7 Support</span>
                 </div>
               </div>

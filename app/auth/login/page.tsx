@@ -23,43 +23,54 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
+
     setError(null)
+    setIsLoading(true)
 
     try {
-      console.log("[v0] Login - Starting authentication")
+      console.log("[v0] Login - Form submitted")
       console.log("[v0] Login - Email:", email)
+      console.log("[v0] Login - Creating Supabase client")
 
       const supabase = createClient()
+      console.log("[v0] Login - Client created successfully")
 
+      console.log("[v0] Login - Calling signInWithPassword")
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
-      console.log("[v0] Login - Auth response:", { data: !!data, error: authError })
+      console.log("[v0] Login - Auth response received")
+      console.log("[v0] Login - Has data:", !!data)
+      console.log("[v0] Login - Has error:", !!authError)
 
       if (authError) {
-        console.error("[v0] Login - Auth error:", authError)
-        throw authError
+        console.error("[v0] Login - Auth error:", authError.message)
+        setError(authError.message)
+        setIsLoading(false)
+        return
       }
 
       if (!data.session) {
-        console.error("[v0] Login - No session returned")
-        throw new Error("No session returned from authentication")
+        console.error("[v0] Login - No session in response")
+        setError("Authentication failed - no session created")
+        setIsLoading(false)
+        return
       }
 
-      console.log("[v0] Login - Success, session created")
+      console.log("[v0] Login - Authentication successful")
+      console.log("[v0] Login - Session ID:", data.session.access_token.substring(0, 20) + "...")
 
-      // Small delay to ensure session is set
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      console.log("[v0] Login - Waiting for session to propagate")
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      console.log("[v0] Login - Redirecting to profile")
+      console.log("[v0] Login - Redirecting to /profile")
       router.push("/profile")
-      router.refresh()
-    } catch (error: unknown) {
-      console.error("[v0] Login - Error:", error)
-      setError(error instanceof Error ? error.message : "An error occurred during login")
+    } catch (err) {
+      console.error("[v0] Login - Unexpected error:", err)
+      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred"
+      setError(errorMessage)
       setIsLoading(false)
     }
   }
@@ -111,6 +122,7 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="bg-input border"
+                      disabled={isLoading}
                     />
                   </div>
 
@@ -125,6 +137,7 @@ export default function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="bg-input border"
+                      disabled={isLoading}
                     />
                   </div>
 
@@ -282,6 +295,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-input border h-12 text-base"
+                  disabled={isLoading}
                 />
               </div>
 
@@ -296,6 +310,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="bg-input border h-12 text-base"
+                  disabled={isLoading}
                 />
               </div>
 

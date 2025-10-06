@@ -11,7 +11,7 @@ import { Logo } from "@/components/ui/logo"
 import { MobileLayout } from "@/components/layout/mobile-layout"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { TrendingUp, BarChart3, Users, Eye, Target, Calendar } from "lucide-react"
 
 export default function LoginPage() {
@@ -19,7 +19,33 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [checkingAuth, setCheckingAuth] = useState(true)
   const router = useRouter()
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        console.log("[v0] Login - Checking if user is already authenticated")
+        const supabase = createClient()
+        const {
+          data: { user },
+        } = await supabase.auth.getUser()
+
+        if (user) {
+          console.log("[v0] Login - User already authenticated, redirecting to /profile")
+          router.replace("/profile")
+        } else {
+          console.log("[v0] Login - No authenticated user, showing login form")
+          setCheckingAuth(false)
+        }
+      } catch (error) {
+        console.error("[v0] Login - Error checking auth:", error)
+        setCheckingAuth(false)
+      }
+    }
+
+    checkAuth()
+  }, [router])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -73,6 +99,19 @@ export default function LoginPage() {
       setError(errorMessage)
       setIsLoading(false)
     }
+  }
+
+  if (checkingAuth) {
+    return (
+      <MobileLayout title="Sign In" showBack={true} showBottomNav={true}>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        </div>
+      </MobileLayout>
+    )
   }
 
   const analyticsData = {
@@ -164,7 +203,6 @@ export default function LoginPage() {
       <div className="hidden lg:flex min-h-screen">
         {/* Left Side - Visual Content */}
         <div className="flex-1 bg-primary/5 p-12 flex flex-col justify-center relative overflow-hidden">
-          {/* Background Pattern */}
           <div className="absolute inset-0 opacity-5">
             <div
               className="absolute inset-0"

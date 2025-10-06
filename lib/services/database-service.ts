@@ -167,42 +167,67 @@ export class DatabaseService {
       return
     }
 
-    const resolvedMatches = await Promise.all(
-      validInputMatches.map(async (match) => {
-        console.log(
-          `[v0] Resolving team IDs for match ${match.external_id}: home=${match.home_team_id}, away=${match.away_team_id}`,
-        )
+    const teamLookups: Array<{ externalId: string; gameType: string; sportType: string }> = []
+    const seenKeys = new Set<string>()
 
-        const homeTeamId = await this.getTeamIdByExternalId(match.home_team_id, match.game_type, match.sport_type)
-        const awayTeamId = await this.getTeamIdByExternalId(match.away_team_id, match.game_type, match.sport_type)
+    validInputMatches.forEach((match) => {
+      const homeKey = `${match.home_team_id}:${match.game_type}:${match.sport_type}`
+      const awayKey = `${match.away_team_id}:${match.game_type}:${match.sport_type}`
 
-        console.log(`[v0] Resolved team IDs for match ${match.external_id}: home=${homeTeamId}, away=${awayTeamId}`)
+      if (!seenKeys.has(homeKey) && !this.teamIdCache.has(homeKey)) {
+        teamLookups.push({
+          externalId: match.home_team_id,
+          gameType: match.game_type,
+          sportType: match.sport_type,
+        })
+        seenKeys.add(homeKey)
+      }
+
+      if (!seenKeys.has(awayKey) && !this.teamIdCache.has(awayKey)) {
+        teamLookups.push({
+          externalId: match.away_team_id,
+          gameType: match.game_type,
+          sportType: match.sport_type,
+        })
+        seenKeys.add(awayKey)
+      }
+    })
+
+    if (teamLookups.length > 0) {
+      await this.batchGetTeamIds(teamLookups)
+    }
+
+    const resolvedMatches = validInputMatches
+      .map((match) => {
+        const homeKey = `${match.home_team_id}:${match.game_type}:${match.sport_type}`
+        const awayKey = `${match.away_team_id}:${match.game_type}:${match.sport_type}`
+
+        const homeTeamId = this.teamIdCache.get(homeKey)
+        const awayTeamId = this.teamIdCache.get(awayKey)
+
+        if (!homeTeamId || !awayTeamId) {
+          console.warn(
+            `[v0] Skipping match ${match.external_id}: missing team IDs (home=${homeTeamId}, away=${awayTeamId})`,
+          )
+          return null
+        }
 
         return {
           ...match,
           home_team_id: homeTeamId,
           away_team_id: awayTeamId,
         }
-      }),
-    )
-
-    const validMatches = resolvedMatches.filter((match) => match.home_team_id && match.away_team_id)
-
-    console.log(`[v0] Valid matches after filtering: ${validMatches.length} out of ${matches.length}`)
-
-    if (validMatches.length === 0) {
-      console.warn("No valid matches to save - all team IDs could not be resolved")
-      resolvedMatches.forEach((match) => {
-        if (!match.home_team_id || !match.away_team_id) {
-          console.warn(
-            `[v0] Failed to resolve team IDs for match ${match.external_id}: home=${match.home_team_id}, away=${match.away_team_id}`,
-          )
-        }
       })
+      .filter((match): match is NonNullable<typeof match> => match !== null)
+
+    console.log(`[v0] Valid matches after filtering: ${resolvedMatches.length} out of ${matches.length}`)
+
+    if (resolvedMatches.length === 0) {
+      console.warn("No valid matches to save - all team IDs could not be resolved")
       return
     }
 
-    const { error } = await supabase.from("matches").upsert(validMatches, {
+    const { error } = await supabase.from("matches").upsert(resolvedMatches, {
       onConflict: "external_id,sport_type,game_type",
       ignoreDuplicates: false,
     })
@@ -212,7 +237,7 @@ export class DatabaseService {
       throw error
     }
 
-    console.log(`[API] Saved ${validMatches.length} matches to database`)
+    console.log(`[v0] Saved ${resolvedMatches.length} matches to database`)
   }
 
   async getMatchesByGame(gameType: string, sportType = "esports", limit = 10): Promise<any[]> {
@@ -370,58 +395,66 @@ export class DatabaseService {
     }
   }
 
-  private async getTeamIdByExternalId(
-    externalId: string,
-    gameType: string,
-    sportType = "esports",
-  ): Promise<string | null> {
+  private async batchGetTeamIds(
+    teamKeys: Array<{ externalId: string; gameType: string; sportType: string }>,
+  ): Promise<Map<string, string | null>> {
     if (!this.isSupabaseConfigured()) {
-      console.warn("[v0] Supabase not configured, cannot resolve team ID")
-      return null
-    }
-
-    const cacheKey = `${externalId}:${gameType}:${sportType}`
-    if (this.teamIdCache.has(cacheKey)) {
-      return this.teamIdCache.get(cacheKey)!
+      console.warn("[v0] Supabase not configured, cannot resolve team IDs")
+      return new Map()
     }
 
     const supabase = this.getServiceClient()
+    const resultMap = new Map<string, string | null>()
 
-    console.log(`[v0] Looking up team ID for external_id=${externalId}, game_type=${gameType}, sport_type=${sportType}`)
+    // Group by game type and sport type for efficient querying
+    const groupedKeys = new Map<string, string[]>()
+    teamKeys.forEach(({ externalId, gameType, sportType }) => {
+      const groupKey = `${gameType}:${sportType}`
+      if (!groupedKeys.has(groupKey)) {
+        groupedKeys.set(groupKey, [])
+      }
+      groupedKeys.get(groupKey)!.push(externalId)
+    })
 
-    const { data, error } = await supabase
-      .from("teams")
-      .select("id")
-      .eq("external_id", externalId)
-      .eq("game_type", gameType)
-      .eq("sport_type", sportType)
-      .limit(1)
+    // Execute batch queries for each group
+    const batchPromises = Array.from(groupedKeys.entries()).map(async ([groupKey, externalIds]) => {
+      const [gameType, sportType] = groupKey.split(":")
 
-    if (error) {
-      console.warn(
-        `[v0] Could not find team with external_id=${externalId}, game_type=${gameType}, sport_type=${sportType}. Error:`,
-        error.message,
-      )
-      this.teamIdCache.set(cacheKey, null)
-      return null
-    }
+      console.log(`[v0] Batch lookup: ${externalIds.length} teams for game_type=${gameType}, sport_type=${sportType}`)
 
-    if (!data || data.length === 0) {
-      console.warn(`[v0] No team found with external_id=${externalId}, game_type=${gameType}, sport_type=${sportType}`)
-      this.teamIdCache.set(cacheKey, null)
-      return null
-    }
+      const { data, error } = await supabase
+        .from("teams")
+        .select("id, external_id")
+        .in("external_id", externalIds)
+        .eq("game_type", gameType)
+        .eq("sport_type", sportType)
 
-    if (data.length > 1) {
-      console.warn(
-        `[v0] Multiple teams found with external_id=${externalId}, game_type=${gameType}, sport_type=${sportType}. Using first match.`,
-      )
-    }
+      if (error) {
+        console.error(`[v0] Batch team lookup error for ${groupKey}:`, error.message)
+        return
+      }
 
-    console.log(`[v0] Found team ID ${data[0].id} for external_id=${externalId}`)
-    const teamId = data[0].id
-    this.teamIdCache.set(cacheKey, teamId)
-    return teamId
+      // Map results
+      data?.forEach((team) => {
+        const cacheKey = `${team.external_id}:${gameType}:${sportType}`
+        resultMap.set(cacheKey, team.id)
+        this.teamIdCache.set(cacheKey, team.id)
+      })
+
+      // Mark missing teams as null
+      externalIds.forEach((externalId) => {
+        const cacheKey = `${externalId}:${gameType}:${sportType}`
+        if (!resultMap.has(cacheKey)) {
+          resultMap.set(cacheKey, null)
+          this.teamIdCache.set(cacheKey, null)
+        }
+      })
+    })
+
+    await Promise.all(batchPromises)
+    console.log(`[v0] Batch lookup completed: ${resultMap.size} team IDs resolved`)
+
+    return resultMap
   }
 }
 

@@ -70,6 +70,7 @@ export async function POST(request: NextRequest) {
         founded_year,
         description,
         website_url,
+        logo_url: null, // Initialize with null, can be updated later
       })
       .select()
       .single()

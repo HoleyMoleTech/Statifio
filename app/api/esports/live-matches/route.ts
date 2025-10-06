@@ -1,8 +1,15 @@
 import { NextResponse } from "next/server"
 import { pandaScoreAPI } from "@/lib/api/pandascore"
+import { handleApiError } from "@/lib/middleware/error-handler"
+import { rateLimit, rateLimitPresets } from "@/lib/middleware/rate-limit"
 
-export async function GET() {
+const limiter = rateLimit(rateLimitPresets.moderate)
+
+export async function GET(request: Request) {
   try {
+    const rateLimitResponse = await limiter(request as any)
+    if (rateLimitResponse) return rateLimitResponse
+
     console.log("[v0] Live matches API called")
 
     const [lolMatches, csgoMatches, dota2Matches] = await Promise.all([
@@ -20,26 +27,9 @@ export async function GET() {
       }),
     ])
 
-    console.log("[v0] Raw matches fetched:", {
-      lol: lolMatches.length,
-      csgo: csgoMatches.length,
-      dota2: dota2Matches.length,
-    })
-
     const allMatches = [...lolMatches, ...csgoMatches, ...dota2Matches]
-    console.log("[v0] Total raw matches:", allMatches.length)
 
     const liveMatches = allMatches.map((match) => {
-      console.log("[v0] Processing match:", match.id)
-      console.log(
-        "[v0] Match opponents:",
-        match.opponents?.map((o) => ({ id: o?.opponent?.id, name: o?.opponent?.name })),
-      )
-      console.log(
-        "[v0] Match results:",
-        match.results?.map((r) => ({ team_id: r?.team_id, score: r?.score })),
-      )
-
       const team1 = match.opponents?.[0]?.opponent
       const team2 = match.opponents?.[1]?.opponent
 
@@ -48,13 +38,6 @@ export async function GET() {
 
       const team1Score = team1Result !== undefined ? team1Result.score : undefined
       const team2Score = team2Result !== undefined ? team2Result.score : undefined
-
-      if (team1?.id && !team1Result && match.results?.length > 0) {
-        console.log("[v0] Warning: Could not resolve score for team1 ID:", team1.id)
-      }
-      if (team2?.id && !team2Result && match.results?.length > 0) {
-        console.log("[v0] Warning: Could not resolve score for team2 ID:", team2.id)
-      }
 
       return {
         id: match.id,
@@ -85,7 +68,6 @@ export async function GET() {
     console.log("[v0] Processed", liveMatches.length, "live matches")
     return NextResponse.json(liveMatches)
   } catch (error) {
-    console.error("Error fetching live matches:", error)
-    return NextResponse.json({ error: "Failed to fetch live matches" }, { status: 500 })
+    return handleApiError(error)
   }
 }

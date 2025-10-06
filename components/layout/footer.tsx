@@ -60,11 +60,6 @@ export function Footer() {
                   Dota 2
                 </Link>
               </li>
-              <li>
-                <Link href="/football" className="text-muted-foreground hover:text-foreground">
-                  Football
-                </Link>
-              </li>
             </ul>
           </div>
 

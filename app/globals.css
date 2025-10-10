@@ -39,6 +39,7 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+/* Updated dark mode colors to match GitHub repo blue theme */
 .dark {
   --background: oklch(0.11 0.015 220.15);
   --foreground: oklch(0.94 0.008 220.15);
@@ -111,6 +112,9 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  /* Added font variables for Inter and JetBrains Mono */
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
 @layer base {
@@ -132,14 +136,12 @@
     flex-shrink: 0;
   }
 
-  /* Ensure SVGs with explicit size classes respect them */
   svg[class*="w-"],
   svg[class*="h-"] {
     width: auto;
     height: auto;
   }
 
-  /* Clean heading hierarchy */
   h1 {
     @apply text-2xl font-semibold tracking-tight leading-tight text-foreground;
   }
@@ -153,95 +155,6 @@
   }
 
   h4 {
-    @apply text-base font-medium tracking-tight leading-relaxed text-muted-foreground;
+    @apply text-base font-medium tracking-tight leading-normal text-foreground;
   }
-
-  p {
-    @apply leading-relaxed text-muted-foreground;
-  }
-
-  a {
-    @apply text-primary transition-colors hover:text-secondary;
-  }
-}
-
-@layer utilities {
-  /* Enhanced utility classes */
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  .text-pretty {
-    text-wrap: pretty;
-  }
-
-  /* Fixed gradient text to use defined color variables for proper visibility */
-  .gradient-text {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-chart-1));
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    font-weight: 700;
-  }
-
-  /* Enhanced glass morphism for cards */
-  .glass {
-    background-color: color-mix(in oklch, var(--color-card) 80%, transparent);
-    backdrop-filter: blur(16px);
-    border: 1px solid color-mix(in oklch, var(--color-border) 50%, transparent);
-  }
-
-  /* Status indicators for live data */
-  .status-live {
-    color: var(--color-esports-secondary);
-  }
-
-  .status-upcoming {
-    color: var(--color-esports-accent);
-  }
-
-  .status-finished {
-    color: var(--color-muted-foreground);
-  }
-
-  /* Esports dashboard specific utilities */
-  .esports-card {
-    @apply bg-card border border-border rounded-lg;
-  }
-
-  .esports-metric {
-    @apply font-mono font-semibold text-foreground;
-  }
-
-  .esports-label {
-    @apply text-sm text-muted-foreground uppercase tracking-wider;
-  }
-
-  /* Chart and data visualization enhancements */
-  .chart-container {
-    @apply bg-card border border-border rounded-lg;
-  }
-
-  .data-point {
-    @apply font-mono text-sm text-muted-foreground;
-  }
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background-color: var(--color-background);
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: color-mix(in oklch, var(--color-muted-foreground) 30%, transparent);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: color-mix(in oklch, var(--color-muted-foreground) 50%, transparent);
 }

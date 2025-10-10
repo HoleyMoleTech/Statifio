@@ -1,88 +1,53 @@
 "use client"
-
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { MatchCard } from "./match-card"
+import { useLiveMatches } from "@/lib/hooks/use-live-matches"
+import { Skeleton } from "@/components/ui/skeleton"
+import { AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { ChevronRight, Clock, Loader2 } from "lucide-react"
 import Link from "next/link"
-import { useLiveMatches } from "@/lib/hooks/use-esports-data"
 
 export function LiveMatches() {
-  const { matches: liveMatches, loading, error } = useLiveMatches()
+  const { matches, isLoading, isError } = useLiveMatches()
 
   return (
-    <section className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-foreground">Live Matches</h2>
-        <Link href="/events">
-          <Button variant="ghost" size="sm" className="text-primary">
-            View All
-            <ChevronRight className="h-4 w-4 ml-1" />
-          </Button>
-        </Link>
+    <section className="px-4 py-8">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Live Matches</h2>
+          <p className="text-sm text-muted-foreground">Watch ongoing matches in real-time</p>
+        </div>
+        <Button variant="ghost" size="sm" asChild>
+          <Link href="/matches">View All</Link>
+        </Button>
       </div>
 
-      {loading ? (
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          <span className="ml-2 text-muted-foreground">Loading live matches...</span>
+      {isLoading && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-48" />
+          ))}
         </div>
-      ) : error ? (
-        <div className="text-center py-8">
-          <div className="text-muted-foreground">Unable to load live matches</div>
-          <p className="text-sm text-muted-foreground mt-1">{error}</p>
-        </div>
-      ) : liveMatches.length === 0 ? (
-        <div className="text-center py-8">
-          <div className="text-muted-foreground">No live matches at the moment</div>
-          <p className="text-sm text-muted-foreground mt-1">Check back later for live eSports action!</p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {liveMatches.slice(0, 3).map((match) => (
-            <Card key={match.id} className="bg-card border">
-              <CardContent className="p-4">
-                <div className="space-y-3">
-                  {/* Match Header */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Badge variant={match.status === "running" ? "default" : "secondary"} className="text-xs">
-                        {match.status === "running" && (
-                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-1"></div>
-                        )}
-                        {match.status === "running" ? "Live" : "Upcoming"}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">{match.tournament?.name || "Tournament"}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      {match.status === "running" ? "Live" : "Soon"}
-                    </div>
-                  </div>
+      )}
 
-                  {/* Teams and Score */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium text-foreground">
-                          {match.teams?.team1?.name || "Team 1"}
-                        </span>
-                        <span className="text-lg font-bold text-foreground">{match.teams?.team1?.score ?? "-"}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-foreground">
-                          {match.teams?.team2?.name || "Team 2"}
-                        </span>
-                        <span className="text-lg font-bold text-foreground">{match.teams?.team2?.score ?? "-"}</span>
-                      </div>
-                    </div>
-                  </div>
+      {isError && (
+        <div className="flex flex-col items-center justify-center rounded-lg border border-border bg-card p-12 text-center">
+          <AlertCircle className="mb-4 h-12 w-12 text-muted-foreground" />
+          <h3 className="mb-2 text-lg font-semibold">Failed to load matches</h3>
+          <p className="text-muted-foreground">Please try again later</p>
+        </div>
+      )}
 
-                  {/* Game Info */}
-                  <div className="text-xs text-muted-foreground">{match.videogame}</div>
-                </div>
-              </CardContent>
-            </Card>
+      {!isLoading && !isError && matches.length === 0 && (
+        <div className="flex flex-col items-center justify-center rounded-lg border border-border bg-card p-12 text-center">
+          <h3 className="mb-2 text-lg font-semibold">No live matches</h3>
+          <p className="text-muted-foreground">Check back soon for live action</p>
+        </div>
+      )}
+
+      {!isLoading && !isError && matches.length > 0 && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {matches.slice(0, 3).map((match) => (
+            <MatchCard key={match.id} match={match} />
           ))}
         </div>
       )}

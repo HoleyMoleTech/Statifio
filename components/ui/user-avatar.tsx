@@ -24,14 +24,12 @@ export const UserAvatar = memo(function UserAvatar({
   size = "md",
   className,
 }: UserAvatarProps) {
-  console.log("[v0] UserAvatar - Rendering with avatarUrl:", avatarUrl)
-
   return (
     <Avatar className={cn(sizeClasses[size], className)}>
       {avatarUrl && avatarUrl !== "/placeholder.svg" && (
-        <AvatarImage src={avatarUrl || "/placeholder.svg"} alt="User avatar" loading="lazy" />
+        <AvatarImage src={avatarUrl || "/placeholder.svg"} alt={userInitial} />
       )}
-      <AvatarFallback className="bg-primary/10 text-primary font-semibold">{userInitial}</AvatarFallback>
+      <AvatarFallback>{userInitial}</AvatarFallback>
     </Avatar>
   )
 })

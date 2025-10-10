@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 
@@ -36,24 +35,23 @@ const gapClasses = {
 export function Logo({ size = "md", showText = true, className, href = "/" }: LogoProps) {
   const logoContent = (
     <div className={cn("flex items-center", gapClasses[size], className)}>
-      <Image
-        src="/statifio-logo.png"
-        alt="Statifio Logo"
-        width={80}
-        height={80}
-        className={cn("object-contain", sizeClasses[size])}
-        priority
-      />
-      {showText && <span className={cn("text-foreground whitespace-nowrap", textSizeClasses[size])}>Statifio</span>}
+      <div className={cn("relative flex-shrink-0", sizeClasses[size])}>
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+          <circle cx="50" cy="50" r="45" fill="currentColor" className="text-primary" />
+          <path
+            d="M30 50 L45 35 L60 50 L45 65 Z M55 35 L70 50 L55 65 L70 50 Z"
+            fill="currentColor"
+            className="text-primary-foreground"
+          />
+        </svg>
+      </div>
+      {showText && <span className={cn(textSizeClasses[size], "text-foreground")}>Statifio</span>}
     </div>
   )
 
   if (href) {
     return (
-      <Link
-        href={href}
-        className="hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-lg"
-      >
+      <Link href={href} className="inline-flex">
         {logoContent}
       </Link>
     )

@@ -7,25 +7,17 @@ import Link from "next/link"
 
 export default function HomePage() {
   return (
-    <MobileLayout title="Statifio" showSearch={true} showNotifications={true} notificationCount={3}>
-      <div className="space-y-12">
-        <HeroSection />
+    <MobileLayout title="Home" showBottomNav={true}>
+      <HeroSection />
+      <SportsOverview />
+      <LiveMatches />
 
-        <SportsOverview />
-
-        <LiveMatches />
-
-        <div className="text-center pt-8">
-          <Link href="/dashboard">
-            <Button
-              variant="outline"
-              size="lg"
-              className="glass hover:bg-muted/50 border-border/50 font-semibold text-base px-8 py-4 shadow-elegant hover:shadow-elegant-lg transition-all duration-300 bg-transparent"
-            >
-              View Analytics Dashboard
-            </Button>
-          </Link>
-        </div>
+      <div className="px-4 py-8 text-center">
+        <Link href="/dashboard">
+          <Button size="lg" className="w-full max-w-md">
+            View Analytics Dashboard
+          </Button>
+        </Link>
       </div>
     </MobileLayout>
   )

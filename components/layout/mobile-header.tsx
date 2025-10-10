@@ -1,6 +1,6 @@
 "use client"
 
-import { Bell, Search, Menu } from "lucide-react"
+import { Bell, Search, Menu, ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
@@ -22,11 +22,6 @@ interface MobileHeaderProps {
   onMenuClick?: () => void
   onBackClick?: () => void
   notificationCount?: number
-}
-
-interface UserProfile {
-  avatar_url?: string
-  username?: string
 }
 
 export function MobileHeader({
@@ -60,89 +55,45 @@ export function MobileHeader({
   )
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80 border-b border-border shadow-sm">
-      <div className="container max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 py-4">
-        <div className="flex items-center gap-3 sm:gap-4">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
+      <div className="flex h-14 items-center justify-between px-4">
+        <div className="flex items-center gap-2">
           {showMenu && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onMenuClick}
-              className="p-2 hover:bg-accent"
-              disabled={navLoading}
-            >
+            <Button variant="ghost" size="icon" onClick={onMenuClick}>
               <Menu className="h-5 w-5" />
             </Button>
           )}
           {showBack && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onBackClick}
-              className="p-2 hover:bg-accent"
-              disabled={navLoading}
-            >
-              <svg
-                className={`h-5 w-5 ${navLoading ? "animate-pulse" : ""}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
+            <Button variant="ghost" size="icon" onClick={onBackClick}>
+              <ChevronLeft className="h-5 w-5" />
             </Button>
           )}
-          <div className="flex items-center">
-            <Logo size="lg" showText={true} className="transition-transform hover:scale-105" />
-          </div>
+          <Logo size="sm" showText={!showBack} />
         </div>
 
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-1">
           {showSearch && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onSearchClick}
-              className="p-2 hover:bg-accent transition-colors"
-              disabled={navLoading}
-            >
+            <Button variant="ghost" size="icon" onClick={onSearchClick}>
               <Search className="h-5 w-5" />
               <span className="sr-only">Search</span>
             </Button>
           )}
-
           {showNotifications && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onNotificationClick}
-              className="p-2 relative hover:bg-accent transition-colors"
-              disabled={navLoading}
-            >
+            <Button variant="ghost" size="icon" onClick={onNotificationClick} className="relative">
               <Bell className="h-5 w-5" />
               <span className="sr-only">Notifications</span>
               {notificationCount > 0 && (
-                <Badge
-                  variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs font-semibold"
-                >
+                <Badge variant="destructive" className="absolute -right-1 -top-1 h-5 min-w-5 px-1 text-xs">
                   {notificationCount > 9 ? "9+" : notificationCount}
                 </Badge>
               )}
             </Button>
           )}
-
           <ThemeToggle />
-
           {user && !isLoading && (
-            <button
-              onClick={handleProfileClick}
-              disabled={navLoading}
-              className="focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-full disabled:opacity-50 transition-all hover:scale-105"
-              aria-label="View profile"
-            >
+            <Button variant="ghost" size="icon" onClick={handleProfileClick} disabled={navLoading}>
               <UserAvatar {...avatarProps} />
-            </button>
+            </Button>
           )}
         </div>
       </div>

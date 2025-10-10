@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { Home, BarChart3, Calendar, Settings, LogIn, Shield, Crown } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -11,11 +10,6 @@ import { useProfile } from "@/contexts/profile-context"
 import { useNavigation } from "@/contexts/navigation-context"
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
-
-interface UserProfile {
-  avatar_url?: string
-  username?: string
-}
 
 const getNavItems = (isAuthenticated: boolean, isAdmin: boolean, isPremium: boolean) => {
   const baseItems = [
@@ -49,7 +43,6 @@ const getNavItems = (isAuthenticated: boolean, isAdmin: boolean, isPremium: bool
         icon: Shield,
       })
     }
-
     if (!isPremium) {
       baseItems.push({
         name: "Premium",
@@ -57,13 +50,12 @@ const getNavItems = (isAuthenticated: boolean, isAdmin: boolean, isPremium: bool
         icon: Crown,
       })
     }
-
     baseItems.push({
       name: "Profile",
       href: "/profile",
       icon: Settings,
       showAvatar: true,
-    })
+    } as any)
   } else {
     baseItems.push({
       name: "Login",
@@ -111,39 +103,35 @@ export function MobileNav() {
   }
 
   return (
-    <nav className="bg-card border-t border">
-      <div className="flex items-center justify-around py-2">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href || (item.href === "/admin/users" && pathname.startsWith("/admin"))
-          const Icon = item.icon
-
-          return (
-            <button
-              key={item.name}
-              onClick={(e) => handleNavClick(item.href, e)}
-              disabled={navLoading}
-              className={cn(
-                "flex flex-col items-center justify-center py-2 px-2 rounded-lg transition-colors",
-                "min-w-[50px] text-xs font-medium disabled:opacity-50",
-                navLoading ? "opacity-50 cursor-not-allowed" : "",
-                isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-muted",
-              )}
-            >
-              {item.showAvatar && user ? (
-                <UserAvatar
-                  avatarUrl={profile?.avatar_url}
-                  userInitial={profile?.username?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || "U"}
-                  size="sm"
-                  className="mb-1"
-                />
-              ) : (
-                <Icon className={cn("h-4 w-4 mb-1", navLoading && "animate-pulse")} />
-              )}
-              <span>{item.name}</span>
-            </button>
-          )
-        })}
-      </div>
+    <nav className="flex items-center justify-around py-2">
+      {navItems.map((item) => {
+        const isActive = pathname === item.href || (item.href === "/admin/users" && pathname.startsWith("/admin"))
+        const Icon = item.icon
+        return (
+          <button
+            key={item.href}
+            onClick={(e) => handleNavClick(item.href, e)}
+            disabled={navLoading}
+            className={cn(
+              "flex flex-col items-center justify-center py-2 px-2 rounded-lg transition-colors",
+              "min-w-[50px] text-xs font-medium disabled:opacity-50",
+              navLoading ? "opacity-50 cursor-not-allowed" : "",
+              isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-muted",
+            )}
+          >
+            {item.showAvatar && user ? (
+              <UserAvatar
+                avatarUrl={profile?.avatar_url}
+                userInitial={profile?.username?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || "U"}
+                size="sm"
+              />
+            ) : (
+              <Icon className="h-5 w-5" />
+            )}
+            <span className="mt-1">{item.name}</span>
+          </button>
+        )
+      })}
     </nav>
   )
 }

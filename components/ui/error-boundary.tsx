@@ -36,23 +36,25 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <Card className="bg-card border">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-destructive">
-              <AlertTriangle className="h-5 w-5" />
-              Something went wrong
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-muted-foreground">
-              We encountered an error while loading this content. Please try refreshing the page.
-            </p>
-            <Button onClick={() => window.location.reload()} variant="outline" className="w-full">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh Page
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="flex min-h-[400px] items-center justify-center p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-destructive" />
+                <CardTitle>Something went wrong</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                We encountered an error while loading this content. Please try refreshing the page.
+              </p>
+              <Button onClick={() => window.location.reload()} variant="outline" className="w-full">
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh Page
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       )
     }
 
@@ -64,46 +66,26 @@ export function ErrorMessage({
   title = "Error",
   message,
   onRetry,
-}: {
-  title?: string
-  message: string
-  onRetry?: () => void
-}) {
+}: { title?: string; message: string; onRetry?: () => void }) {
   return (
-    <div className="text-center py-8 space-y-4">
-      <div className="flex items-center justify-center w-12 h-12 bg-destructive/10 rounded-full mx-auto">
-        <AlertTriangle className="h-6 w-6 text-destructive" />
-      </div>
-      <div className="space-y-2">
-        <h3 className="font-semibold text-foreground">{title}</h3>
-        <p className="text-sm text-muted-foreground max-w-md mx-auto">{message}</p>
-      </div>
-      {onRetry && (
-        <Button onClick={onRetry} variant="outline" size="sm">
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Try Again
-        </Button>
-      )}
+    <div className="flex items-center justify-center p-8">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-destructive" />
+            <CardTitle>{title}</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">{message}</p>
+          {onRetry && (
+            <Button onClick={onRetry} variant="outline" className="w-full bg-transparent">
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Try Again
+            </Button>
+          )}
+        </CardContent>
+      </Card>
     </div>
-  )
-}
-
-export function NetworkError({ onRetry }: { onRetry?: () => void }) {
-  return (
-    <ErrorMessage
-      title="Connection Error"
-      message="Unable to connect to our servers. Please check your internet connection and try again."
-      onRetry={onRetry}
-    />
-  )
-}
-
-export function DataError({ onRetry }: { onRetry?: () => void }) {
-  return (
-    <ErrorMessage
-      title="Data Unavailable"
-      message="We're having trouble loading the latest data. This might be a temporary issue."
-      onRetry={onRetry}
-    />
   )
 }

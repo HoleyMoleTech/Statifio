@@ -9,18 +9,17 @@ import "./globals.css"
 
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-inter", // Updated to match globals.css variable name
+  variable: "--font-inter",
 })
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-jetbrains-mono", // Updated to match globals.css variable name
+  variable: "--font-jetbrains-mono",
 })
 
 export const metadata: Metadata = {
   title: "Statifio - Sports Statistics",
   description: "Your ultimate destination for eSports and football statistics",
-  generator: "v0.app",
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -29,6 +28,7 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: "/icon-192.png", sizes: "192x192", type: "image/png" }],
   },
+    generator: 'v0.app'
 }
 
 export default function RootLayout({
@@ -37,14 +37,14 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
-      <body className="font-sans antialiased">
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+      <body className="antialiased">
         <ThemeProvider>
-          <ProfileProvider>
-            <NavigationProvider>
+          <NavigationProvider>
+            <ProfileProvider>
               <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
-            </NavigationProvider>
-          </ProfileProvider>
+            </ProfileProvider>
+          </NavigationProvider>
         </ThemeProvider>
       </body>
     </html>

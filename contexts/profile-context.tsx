@@ -32,6 +32,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [lastFetchedUserId, setLastFetchedUserId] = useState<string | null>(null)
+
   const supabase = createClient()
 
   const fetchProfile = useCallback(
@@ -69,22 +70,19 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         setIsLoading(false)
       }
     },
-    [lastFetchedUserId, supabase], // Removed profile from dependencies
+    [lastFetchedUserId, supabase],
   )
 
   const refreshProfile = useCallback(async () => {
     if (!user?.id) return
     setIsLoading(true)
-    setLastFetchedUserId(null) // Force refetch
+    setLastFetchedUserId(null)
     await fetchProfile(user.id)
   }, [user?.id, fetchProfile])
 
-  const updateProfile = useCallback(
-    (updates: Partial<UserProfile>) => {
-      setProfile((prev) => (prev ? { ...prev, ...updates } : null))
-    },
-    [], // Removed profile dependency since we use functional update
-  )
+  const updateProfile = useCallback((updates: Partial<UserProfile>) => {
+    setProfile((prev) => (prev ? { ...prev, ...updates } : null))
+  }, [])
 
   useEffect(() => {
     if (!authLoading && user) {

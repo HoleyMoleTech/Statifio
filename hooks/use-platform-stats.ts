@@ -12,7 +12,7 @@ interface PlatformStats {
 
 let cachedStats: PlatformStats | null = null
 let cacheTimestamp = 0
-let ongoingRequest: Promise<any> | null = null
+let ongoingRequest: Promise<PlatformStats> | null = null
 
 export function usePlatformStats(): PlatformStats {
   const [stats, setStats] = useState<PlatformStats>({
@@ -48,9 +48,7 @@ export function usePlatformStats(): PlatformStats {
         if (!response.ok) {
           throw new Error("Failed to fetch statistics")
         }
-
         const data = await response.json()
-        console.log("[v0] Platform stats API response:", data)
 
         const totalMatches =
           data.data?.games?.reduce((sum: number, game: any) => sum + (game.stats.activeMatches || 0), 0) || 0
@@ -58,8 +56,6 @@ export function usePlatformStats(): PlatformStats {
           data.data?.games?.reduce((sum: number, game: any) => sum + (game.stats.totalPlayers || 0), 0) || 0
         const totalTeams =
           data.data?.games?.reduce((sum: number, game: any) => sum + (game.stats.totalPlayers / 5 || 0), 0) || 0
-
-        console.log("[v0] Calculated totals:", { totalMatches, totalPlayers, totalTeams })
 
         const newStats = {
           totalMatches,
@@ -69,10 +65,8 @@ export function usePlatformStats(): PlatformStats {
           error: null,
         }
 
-        // Cache the result
         cachedStats = newStats
         cacheTimestamp = Date.now()
-
         return newStats
       })
 
